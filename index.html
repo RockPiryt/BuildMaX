@@ -3,198 +3,235 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>BuildMaX</title>
-		<meta name="keywords" content="magazyn działk powierzchnia">
+		<meta name="keywords" content="magazyn działka powierzchnia">
 		<meta name="description" content="Strona o magazynach">
 		<meta name="author" content="Paulina Kimak">
 		<link rel=stylesheet media=all href="css/style.css" />
 	</head>
 
 	<body>
-		<div id="page-wrapper">
+		<!-- Header -->
+		<header>
+			<!-- Logo -->
+			<div id="logo">
+				<h1><a href="index.html">BuildMaX</a></h1>
+				<p>Przeanalizuj  wybraną  działkę  pod  kątem opłacalności zakupu wykorzystując narzędzia AI</p>
+			</div>
 
-				<!-- Header -->
-				<section id="header" class="wrapper">
-
-					<!-- Logo -->
-						<div id="logo">
-							<h1><a href="index.html">BuildMaX</a></h1>
-							<p>Przeanalizuj  wybraną  działkę  pod  kątem
-								opłacalności zakupu wykorzystując narzędzia AI</p>
-						</div>
-
-					<!-- Menu -->
-						<nav id="nav">
-							<ul>
-								<li class="current"><a href="index.html">Strona domowa</a></li>
-								<li>
-									<a href="#about">O magazynach</a>
-									<ul>
-										<li><a href="#highs">Wysokości hal</a></li>
-										<li>
-											<a href="#modules">Moduły</a>
-											<ul>
-												<li><a href="#eight">8x8m/a></li>
-												<li><a href="#ten">10x10m</a></li>
-												<li><a href="#twelve">12x12m</a></li>
-											</ul>
-										</li>
-										<li><a href="#trackourts">Trackourty</a></li>
-										<li>
-											<a href="#eco">Eco rozwiązania</a>
-											<ul>
-												<li><a href="#eco">Panele solarne</a></li>
-												<li><a href="#eco">Rekuperacja</a></li>
-												<li><a href="#eco">Wykorzystanie deszczówki</a></li>
-											</ul>
-										</li>
-										<li>
-											<a href="#standards">Standardy</a>
-											<ul>
-												<li><a href="#office">Standard biur</a></li>
-												<li><a href="#warehoue">Standard magazynów</a></li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-								<li><a href="#build">Realizacje</a></li>
-								<li><a href="offer">Oferta</a></li>
-							</ul>
-						</nav>
-
-				</section>
-
-				<!-- Opis -->
-				<section id="intro" class="wrapper style1">
-					<div class="title">O BuildMax</div>
-					<div class="container">
-						<h2 class="style1">Do czego służy</h2>
-						<p class="style2">
-							BuildMaX  to  aplikacja  stworzona specjalnie <br/> dla  developerów  magazynowych.
-						</p>
-						<p class="style3">
-							BuildMaX  oblicza  <strong>maksymalna powierzchnię </strong>  zabudowy dla  wybranej  działki  w  oparciu  <br/> o wybrany <strong>standard</strong>  budowlany
-						    oraz uwarunkowania przestrzenne i prawne.</p>
-						<ul class="actions">
-							<li><a href="#" class="button style3 large">Wybierz oferte</a></li>
+			<!-- Menu -->
+			<nav id="nav">
+				<ul>
+					<li class="current"><a href="index.html">Strona domowa</a></li>
+					<li>
+						<a href="#about">O magazynach</a>
+						<ul>
+							<li>
+								<a href="#tables">Zestawienia</a>
+								<ul>
+									<li><a href="#table1">Zestawienie powierzchni</a></li>
+									<li><a href="#table2">Zestawienie miejsc postojowych</a></li>
+								</ul>
+							</li>
+							<li>
+								<a href="#standards">Standardy</a>
+								<ul>
+									<li><a href="#3d">Opis budynków</a></li>
+									<li><a href="#office">Standard biur</a></li>
+									<li><a href="#modules">Standard magazynów</a></li>
+								</ul>
+							</li>
 						</ul>
-					</div>
+					</li>
+					<li>
+						<a href="#eco">Eco rozwiązania</a>
+						<ul>
+							<li><a href="#solar">Panele solarne</a></li>
+							<li><a href="#recu">Rekuperacja</a></li>
+							<li><a href="#rain">Wykorzystanie deszczówki</a></li>
+						</ul>
+					</li>
+					<li><a href="#build">Realizacje</a></li>
+					<li><a href="offer">Oferta</a></li>
+				</ul>
+			</nav>
+				
+		</header>
+
+		<!-- Opis -->
+		<section id="about">
+			<div>
+				<h1>BuildMax</h1>
+				<p>BuildMaX  to  aplikacja  stworzona specjalnie <br/> dla  developerów  magazynowych.</p>
+			</div>
+			<div>
+				<h2>Do czego służy</h2>
+				<p>Decyzja o zakupie działki jest podejmowana przez dewelopera na podstawie analizy chłonności, która określa procent
+					zabudowy w stosunku do całej działki. Im wyższa wartość procentu zabudowy (powyżej 40 %) tym bardziej opłaca się
+					zakup działki. Potrzeba także przeanalizować możliwe obszary problemowe takie jak np. duża ilość prac ziemnych czy
+					stanowiska  archeologiczne.  Proces  ten  jest  czasochłonny  ze  względu  na  potrzebę  analizy  wielu  dokumentów  oraz
+					wykonanie  planów  zagospodarowania  działki  w  oparciu  o  standard  budowlany  developera.  Wykonanie  standardowej
+					analizy chłonności terenu zajmuje zwykle kilka tygodni. </p>
+				<p>
+					BuildMaX  oblicza  <strong>maksymalna powierzchnię </strong>  zabudowy dla  wybranej  działki  w  oparciu  <br/> o wybrany <strong>standard</strong>  budowlany
+					oraz uwarunkowania przestrzenne i prawne.</p>
+				<a href="#offer">Wybierz oferte</a>
+			</div>
+		</section>
+
+		<hr>
+
+		<section>
+			<!-- Opis budynków -->
+			<div id="standards">
+				<h2>Opis budynków</h2>
+				<dl>
+					<dt><h4>Hala przemysłowa</h4></dt>
+					<dd>Miejsce przechowywania towarów lub wydzielona przestrzeń przeznaczona pod działalność produkcyjną</dd>
+					<dt><h4>Biuro</h4></dt>
+					<dd>Przestrzeń o kategorii ZL przeznaczona na długotrwałe przebywanie ludzi.</dd>
+					<dt><h4>Portiernia</h4></dt>
+					<dd>Budnynek służący do nadzorowania dostępu do magazynu.</dd>
+					<dt><h4>Pompownia</h4></dt>
+					<dd>Budnynek techniczny do realizacji zadań związanych z wodą.</dd>
+				</dl>
+			</div>
+
+			<!-- Standard magazynów-->
+			<div id="modules">
+				<h2>Standard magazynów</h2>
+				<h4>Dostępne moduły magazynów</h4>
+				<ul>
+					<li>8x8m</li>
+					<li>10x10m</li>
+					<li>12x12m</li>
+				</ul>
+			</div>
+
+			<!-- Standard biur-->
+			<div id="office">
+				<h2>Standard biur</h2>
+				<h4>Biura zawierają m.in. :</h4>
+				<ol>
+					<li>Pomieszczenia biurowe</li>
+					<li>Sale konferencyjne</li>
+					<li>Toalety</li>
+					<li>Kuchnie</li>
+					<li>Szatnie dla pracowników fizycznych</li>
+					<li>Komunikacja</li>
+				</ol>
+			</div>
+
+
+		</section>
+
+		<hr>
+
+		<!-- Przykłady zestawień -->
+		<article id="tables">
+			<h2>Zestawienie powierzchni</h2>
+			<p>
+				Dzięki  aplikacji  BuildMaX  developer  podaje  wielkość  modułu  magazynowego  oraz  określa  adres  działki,  którą  jest
+				zainteresowany.  Aplikacja  posiadając  te  dane  oblicza  maksymalną  powierzchnię  zabudowy  uwzględniając  szereg
+				przepisów  prawnych  (MPZP,  WT  oraz  Prawo  Budowlane). 
+			</p>
+			<table id="table1" border=1>
+				<caption>Przykładowe zestawanie wyliczonych powierzchni</caption>
+				<thead>
+					<tr>
+						<th>Rodzaj</th>
+						<th>Procent</th>
+						<th>Powierzchnia</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+					<td>Powierzchnia zabudowy</td>
+					<td>55%</td>
+					<td>1200m2</td>
+					</tr>
+					<tr>
+					<td>Powierzchnia zieleni</td>
+					<td>20%</td>
+					<td>578m2</td>
+					</tr>
+					<tr>
+					<td>Powierzchnia utwardzeń</td>
+					<td>20%</td>
+					<td>242m2</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table id="table2" border=1>
+				<caption>Przykładowe zestawanie parkingów</caption>
+				<thead>
+					<tr>
+						<th>Rodzaj</th>
+						<th>Ilość</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Miejsca postojowe dla samochodów osobowych</td>
+						<td>122</td>
+					</tr>
+					<tr>
+						<td>Miejsca postojowe dla samochodów cieżarowych</td>
+						<td>15</td>
+					</tr>
+					<tr>
+					</tr>
+				</tbody>
+				</table>
+		</article>
+
+		<!-- Eko rozwiązania -->
+		<section id="eco">
+			<div>
+				<h2>Eko rozwiązania</h2>
+				<sectid="solar">
+					<a href="#"><img src="img/pexels-pixabay-356036tiny.jpg" alt="Fotowoltaika" /></a>
+					<h3>Panele fotowoltaiczne</h3>
+					<p>Wydajność instalacji fotowoltaicznej po 10 latach mieści się w granicach 80%. Szacuje się, że panele fotowoltaiczne mogą pracować nawet przez 60 lat, bez przeszkód i większych napraw. .</p>
+					<a href="#">Wiecej</a>
 				</section>
-
-				<hr>
-
-				<!-- Przykłady zestawień -->
-				<article id="zestawienia">
-					<h2>Zestawienie powierzchni</h2>
-					<p>
-						Dzięki  aplikacji  BuildMaX  developer  podaje  wielkość  modułu  magazynowego  oraz  określa  adres  działki,  którą  jest
-						zainteresowany.  Aplikacja  posiadając  te  dane  oblicza  maksymalną  powierzchnię  zabudowy  uwzględniając  szereg
-						przepisów  prawnych  (MPZP,  WT  oraz  Prawo  Budowlane). 
-					</p>
-					<table border=1>
-					   <caption>Przykładowe zestawanie wyliczonych powierzchni</caption>
-					   <thead>
-						  <tr>
-							 <th>Rodzaj</th>
-							 <th>Procent</th>
-							 <th>Powierzchnia</th>
-						  </tr>
-					   </thead>
-					   <tbody>
-						  <tr>
-							<td>Powierzchnia zabudowy</td>
-							<td>55%</td>
-							<td>1200m2</td>
-						  </tr>
-						  <tr>
-							<td>Powierzchnia zieleni</td>
-							<td>20%</td>
-							<td>578m2</td>
-						  </tr>
-						  <tr>
-							<td>Powierzchnia utwardzeń</td>
-							<td>20%</td>
-							<td>242m2</td>
-						  </tr>
-					   </tbody>
-					</table>
-
-					<table border=1>
-						<caption>Przykładowe zestawanie parkingów</caption>
-						<thead>
-						   <tr>
-							  <th>Rodzaj</th>
-							  <th>Ilość</th>
-						   </tr>
-						</thead>
-						<tbody>
-						   <tr>
-							 <td>Miejsca postojowe dla samochodów osobowych</td>
-							 <td>122</td>
-						   </tr>
-						   <tr>
-							 <td>Miejsca postojowe dla samochodów cieżarowych</td>
-							 <td>15</td>
-						   </tr>
-						   <tr>
-						   </tr>
-						</tbody>
-					 </table>
+		
+				<section id="rain">
+					<a href="#"><img src="img/pexels-pixabay-40731tiny.jpg" alt="Deszcz" /></a>
+					<h3>Deszczówka</h3>
+					<p>Woda deszczowa jest wodą czystą, wolną od bakterii, ale w momencie styczności z dachem zostaje zabrudzona i zmienia się w wodę szarą. W systemach gromadzenia wody deszczowej wykorzystuje się cały układ filtrów, dzięki którym woda, zanim trafi do zbiornika, zostaje oczyszczona</p>
+					<a href="#">Wiecej</a>
+				</section>
 			
-				</article>
-
-				<!-- Eko rozwiązania -->
-				<section id="eco" class="wrapper style3">
-					<div class="title"><h2>Eko rozwiązania</h2></div>
-					<div class="container">
-						<div class="row aln-center">
-							<div class="col-4 col-12-medium">
-								<section class="eco">
-									<a href="#" class="image featured"><img src="img/pexels-pixabay-356036tiny.jpg" alt="Fotowoltaika" /></a>
-									<h3>Panele fotowoltaiczne</h3>
-									<p>Wydajność instalacji fotowoltaicznej po 10 latach mieści się w granicach 80%. Szacuje się, że panele fotowoltaiczne mogą pracować nawet przez 60 lat, bez przeszkód i większych napraw. .</p>
-									<ul class="actions">
-										<li><a href="#" class="button style1">Wiecej</a></li>
-									</ul>
-								</section>
-							</div>
-							<div class="col-4 col-12-medium">
-								<section class="eco">
-									<a href="#" class="image featured"><img src="img/pexels-pixabay-40731tiny.jpg" alt="Deszcz" /></a>
-									<h3>Deszczówka</h3>
-									<p>Woda deszczowa jest wodą czystą, wolną od bakterii, ale w momencie styczności z dachem zostaje zabrudzona i zmienia się w wodę szarą. W systemach gromadzenia wody deszczowej wykorzystuje się cały układ filtrów, dzięki którym woda, zanim trafi do zbiornika, zostaje oczyszczona</p>
-									<ul class="actions">
-										<li><a href="#" class="button style1">Wiecej</a></li>
-									</ul>
-								</section>
-							</div>
-							<div class="col-4 col-12-medium">
-								<section class="eco">
-									<a href="#" class="image featured"><img src="img/pexels-mikebirdy-110844tiny.jpg" alt="Ładowarka" /></a>
-									<h3>Stacje ładowania</h3>
-									<p>Stacja ładowania do samochodu elektrycznego AC wykorzystuje prąd zmienny, a jej moc to od 3,7 kW do nawet 43 kW. Produkowana jest w dwóch wariantach – wiszącym, typu wallbox (montowanym na ścianie), i wolnostojącym.</p>
-									<ul class="actions">
-										<li><a href="#" class="button style1">Wiecej</a></li>
-									</ul>
-								</section>
-							</div>
-						</div>
-					</div>
+				<section id="recu">
+					<a href="#"><img src="img/pexels-mikebirdy-110844tiny.jpg" alt="Ładowarka" /></a>
+					<h3>Stacje ładowania</h3>
+					<p>Stacja ładowania do samochodu elektrycznego AC wykorzystuje prąd zmienny, a jej moc to od 3,7 kW do nawet 43 kW. Produkowana jest w dwóch wariantach – wiszącym, typu wallbox (montowanym na ścianie), i wolnostojącym.</p>
+					<a href="#">Wiecej</a>
 				</section>
+			</div>
+		</section>
 
-				<section>
-					<h2>Realizacje</h2>
-					<figure>
-						<img src="img/bydgoszcz.jpg" alt="Magazyn Bydgoszcz">
-						<figcaption>Magazyn w Bygoszczy, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
-					</figure>
-				</section>
+		<section>
+			<h2>Realizacje</h2>
+			<figure>
+				<img src="img/bydgoszcz.jpg" alt="Magazyn Bydgoszcz">
+				<figcaption>Magazyn w Bygoszczy, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
+			</figure>
 
-				<footer>
-					<details>
-						<summary>&copy; Wszelkie prawa zastrzeżone 2025</summary>
-						<p>Autor: Paulina Kimak</p>
-					</details>
-				</footer>
+			<figure>
+				<img src="img/torun.jpg" alt="Magazyn Toruń">
+				<figcaption>Magazyn w Toruniu, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
+			</figure>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<details>
+				<summary>&copy; Wszelkie prawa zastrzeżone 2025</summary>
+				<p>Autor: Paulina Kimak</p>
+			</details>
+		</footer>
 
 
 	</body>
