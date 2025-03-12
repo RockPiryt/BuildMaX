@@ -1,14 +1,18 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>BuildMax</title>
 		<meta charset="utf-8" />
-		<link rel="stylesheet" href="assets/css/main.css" />
+		<title>BuildMaX</title>
+		<meta name="keywords" content="magazyn działk powierzchnia">
+		<meta name="description" content="Strona o magazynach">
+		<meta name="author" content="Paulina Kimak">
+		<link rel=stylesheet media=all href="css/style.css" />
 	</head>
+
 	<body>
 		<div id="page-wrapper">
 
-			<!-- Header -->
+				<!-- Header -->
 				<section id="header" class="wrapper">
 
 					<!-- Logo -->
@@ -18,7 +22,7 @@
 								opłacalności zakupu wykorzystując narzędzia AI</p>
 						</div>
 
-					<!-- Nav -->
+					<!-- Menu -->
 						<nav id="nav">
 							<ul>
 								<li class="current"><a href="index.html">Strona domowa</a></li>
@@ -38,26 +42,32 @@
 										<li>
 											<a href="#eco">Eco rozwiązania</a>
 											<ul>
-												<li><a href="#panels">Panele solarne</a></li>
-												<li><a href="#recuperation">Rekuperacja</a></li>
-												<li><a href="#rainwater">Wykorzystanie deszczówki</a></li>
+												<li><a href="#eco">Panele solarne</a></li>
+												<li><a href="#eco">Rekuperacja</a></li>
+												<li><a href="#eco">Wykorzystanie deszczówki</a></li>
+											</ul>
+										</li>
+										<li>
+											<a href="#standards">Standardy</a>
+											<ul>
+												<li><a href="#office">Standard biur</a></li>
+												<li><a href="#warehoue">Standard magazynów</a></li>
 											</ul>
 										</li>
 									</ul>
 								</li>
-								<li><a href="#offices">Standard Biur</a></li>
-								<li><a href="#magazines">Standard magazynów</a></li>
+								<li><a href="#build">Realizacje</a></li>
 								<li><a href="offer">Oferta</a></li>
 							</ul>
 						</nav>
 
 				</section>
 
-			<!-- Intro -->
+				<!-- Opis -->
 				<section id="intro" class="wrapper style1">
 					<div class="title">O BuildMax</div>
 					<div class="container">
-						<p class="style1">Do czego służy</p>
+						<h2 class="style1">Do czego służy</h2>
 						<p class="style2">
 							BuildMaX  to  aplikacja  stworzona specjalnie <br/> dla  developerów  magazynowych.
 						</p>
@@ -69,46 +79,122 @@
 						</ul>
 					</div>
 				</section>
-				
-			<!-- Eco solutions -->
-			<section id="eco" class="wrapper style3">
-				<div class="title">Eko rozwiązania</div>
-				<div class="container">
-					<div class="row aln-center">
-						<div class="col-4 col-12-medium">
-							<section class="highlight">
-								<a href="#" class="image featured"><img src="images/pexels-pixabay-356036.jpg" alt="" /></a>
-								<h3><a href="#">Panele fotowoltaiczne</a></h3>
-								<p>Wydajność instalacji fotowoltaicznej po 10 latach mieści się w granicach 80%. Szacuje się, że panele fotowoltaiczne mogą pracować nawet przez 60 lat, bez przeszkód i większych napraw. .</p>
-								<ul class="actions">
-									<li><a href="#" class="button style1">Wiecej</a></li>
-								</ul>
-							</section>
-						</div>
-						<div class="col-4 col-12-medium">
-							<section class="highlight">
-								<a href="#" class="image featured"><img src="images/pexels-pixabay-40731.jpg" alt="" /></a>
-								<h3><a href="#">Deszczówka</a></h3>
-								<p>Woda deszczowa jest wodą czystą, wolną od bakterii, ale w momencie styczności z dachem zostaje zabrudzona i zmienia się w wodę szarą. W systemach gromadzenia wody deszczowej wykorzystuje się cały układ filtrów, dzięki którym woda, zanim trafi do zbiornika, zostaje oczyszczona</p>
-								<ul class="actions">
-									<li><a href="#" class="button style1">Wiecej</a></li>
-								</ul>
-							</section>
-						</div>
-						<div class="col-4 col-12-medium">
-							<section class="highlight">
-								<a href="#" class="image featured"><img src="images/pexels-mikebirdy-110844.jpg" alt="" /></a>
-								<h3><a href="#">Stacje ładowania</a></h3>
-								<p>Stacja ładowania do samochodu elektrycznego AC wykorzystuje prąd zmienny, a jej moc to od 3,7 kW do nawet 43 kW. Produkowana jest w dwóch wariantach – wiszącym, typu wallbox (montowanym na ścianie), i wolnostojącym.</p>
-								<ul class="actions">
-									<li><a href="#" class="button style1">Wiecej</a></li>
-								</ul>
-							</section>
+
+				<hr>
+
+				<!-- Przykłady zestawień -->
+				<article id="zestawienia">
+					<h2>Zestawienie powierzchni</h2>
+					<p>
+						Dzięki  aplikacji  BuildMaX  developer  podaje  wielkość  modułu  magazynowego  oraz  określa  adres  działki,  którą  jest
+						zainteresowany.  Aplikacja  posiadając  te  dane  oblicza  maksymalną  powierzchnię  zabudowy  uwzględniając  szereg
+						przepisów  prawnych  (MPZP,  WT  oraz  Prawo  Budowlane). 
+					</p>
+					<table border=1>
+					   <caption>Przykładowe zestawanie wyliczonych powierzchni</caption>
+					   <thead>
+						  <tr>
+							 <th>Rodzaj</th>
+							 <th>Procent</th>
+							 <th>Powierzchnia</th>
+						  </tr>
+					   </thead>
+					   <tbody>
+						  <tr>
+							<td>Powierzchnia zabudowy</td>
+							<td>55%</td>
+							<td>1200m2</td>
+						  </tr>
+						  <tr>
+							<td>Powierzchnia zieleni</td>
+							<td>20%</td>
+							<td>578m2</td>
+						  </tr>
+						  <tr>
+							<td>Powierzchnia utwardzeń</td>
+							<td>20%</td>
+							<td>242m2</td>
+						  </tr>
+					   </tbody>
+					</table>
+
+					<table border=1>
+						<caption>Przykładowe zestawanie parkingów</caption>
+						<thead>
+						   <tr>
+							  <th>Rodzaj</th>
+							  <th>Ilość</th>
+						   </tr>
+						</thead>
+						<tbody>
+						   <tr>
+							 <td>Miejsca postojowe dla samochodów osobowych</td>
+							 <td>122</td>
+						   </tr>
+						   <tr>
+							 <td>Miejsca postojowe dla samochodów cieżarowych</td>
+							 <td>15</td>
+						   </tr>
+						   <tr>
+						   </tr>
+						</tbody>
+					 </table>
+			
+				</article>
+
+				<!-- Eko rozwiązania -->
+				<section id="eco" class="wrapper style3">
+					<div class="title"><h2>Eko rozwiązania</h2></div>
+					<div class="container">
+						<div class="row aln-center">
+							<div class="col-4 col-12-medium">
+								<section class="eco">
+									<a href="#" class="image featured"><img src="img/pexels-pixabay-356036tiny.jpg" alt="Fotowoltaika" /></a>
+									<h3>Panele fotowoltaiczne</h3>
+									<p>Wydajność instalacji fotowoltaicznej po 10 latach mieści się w granicach 80%. Szacuje się, że panele fotowoltaiczne mogą pracować nawet przez 60 lat, bez przeszkód i większych napraw. .</p>
+									<ul class="actions">
+										<li><a href="#" class="button style1">Wiecej</a></li>
+									</ul>
+								</section>
+							</div>
+							<div class="col-4 col-12-medium">
+								<section class="eco">
+									<a href="#" class="image featured"><img src="img/pexels-pixabay-40731tiny.jpg" alt="Deszcz" /></a>
+									<h3>Deszczówka</h3>
+									<p>Woda deszczowa jest wodą czystą, wolną od bakterii, ale w momencie styczności z dachem zostaje zabrudzona i zmienia się w wodę szarą. W systemach gromadzenia wody deszczowej wykorzystuje się cały układ filtrów, dzięki którym woda, zanim trafi do zbiornika, zostaje oczyszczona</p>
+									<ul class="actions">
+										<li><a href="#" class="button style1">Wiecej</a></li>
+									</ul>
+								</section>
+							</div>
+							<div class="col-4 col-12-medium">
+								<section class="eco">
+									<a href="#" class="image featured"><img src="img/pexels-mikebirdy-110844tiny.jpg" alt="Ładowarka" /></a>
+									<h3>Stacje ładowania</h3>
+									<p>Stacja ładowania do samochodu elektrycznego AC wykorzystuje prąd zmienny, a jej moc to od 3,7 kW do nawet 43 kW. Produkowana jest w dwóch wariantach – wiszącym, typu wallbox (montowanym na ścianie), i wolnostojącym.</p>
+									<ul class="actions">
+										<li><a href="#" class="button style1">Wiecej</a></li>
+									</ul>
+								</section>
+							</div>
 						</div>
 					</div>
-				</div>
-			</section>
+				</section>
 
+				<section>
+					<h2>Realizacje</h2>
+					<figure>
+						<img src="img/bydgoszcz.jpg" alt="Magazyn Bydgoszcz">
+						<figcaption>Magazyn w Bygoszczy, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
+					</figure>
+				</section>
+
+				<footer>
+					<details>
+						<summary>&copy; Wszelkie prawa zastrzeżone 2025</summary>
+						<p>Autor: Paulina Kimak</p>
+					</details>
+				</footer>
 
 
 	</body>
