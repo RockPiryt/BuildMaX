@@ -35,9 +35,9 @@
 							<li>
 								<a href="#standards">Standardy</a>
 								<ul>
-									<li><a href="#3d">Opis budynków</a></li>
-									<li><a href="#office">Standard biur</a></li>
+									<li><a href="#general">Opis budynków</a></li>
 									<li><a href="#modules">Standard magazynów</a></li>
+									<li><a href="#office">Standard biur</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -50,8 +50,9 @@
 							<li><a href="#rain">Wykorzystanie deszczówki</a></li>
 						</ul>
 					</li>
-					<li><a href="#build">Realizacje</a></li>
-					<li><a href="offer">Oferta</a></li>
+					<li><a href="#visual">Wizualizacje</a></li>
+					<li><a href="#legend">Oznaczenia</a></li>
+					<li><a href="#form">Formularz</a></li>
 				</ul>
 			</nav>
 				
@@ -82,7 +83,7 @@
 
 		<section>
 			<!-- Opis budynków -->
-			<div id="standards">
+			<div id="general">
 				<h2>Opis budynków</h2>
 				<dl>
 					<dt><h4>Hala przemysłowa</h4></dt>
@@ -135,7 +136,7 @@
 				przepisów  prawnych  (MPZP,  WT  oraz  Prawo  Budowlane). 
 			</p>
 			<table id="table1" border=1>
-				<caption>Przykładowe zestawanie wyliczonych powierzchni</caption>
+				<caption><strong>Przykładowe zestawanie wyliczonych powierzchni</strong></caption>
 				<thead>
 					<tr>
 						<th>Rodzaj</th>
@@ -145,25 +146,30 @@
 				</thead>
 				<tbody>
 					<tr>
-					<td>Powierzchnia zabudowy</td>
-					<td>55%</td>
-					<td>1200m2</td>
+						<td>Powierzchnia zabudowy</td>
+						<td>55%</td>
+						<td>1200m2</td>
 					</tr>
 					<tr>
-					<td>Powierzchnia zieleni</td>
-					<td>20%</td>
-					<td>578m2</td>
+						<td>Powierzchnia zieleni</td>
+						<td>20%</td>
+						<td>578m2</td>
 					</tr>
 					<tr>
-					<td>Powierzchnia utwardzeń</td>
-					<td>20%</td>
-					<td>242m2</td>
+						<td>Powierzchnia utwardzeń</td>
+						<td>20%</td>
+						<td>242m2</td>
+					</tr>
+					<tr>
+						<td colspan="2"><strong>Całkowita powierzchnia</strong></td>
+						<td>1778m2</td>
 					</tr>
 				</tbody>
 			</table>
+			<br>
 
 			<table id="table2" border=1>
-				<caption>Przykładowe zestawanie parkingów</caption>
+				<caption><strong>Przykładowe zestawanie parkingów</strong></caption>
 				<thead>
 					<tr>
 						<th>Rodzaj</th>
@@ -189,7 +195,7 @@
 		<section id="eco">
 			<div>
 				<h2>Eko rozwiązania</h2>
-				<sectid="solar">
+				<section id="solar">
 					<figure>
 						<img src="img/pexels-pixabay-356036tiny.jpg" alt="Fotowoltaika">
 						<figcaption>Fotowoltaika, źródło: pexels.com, autor: Pixabay</figcaption>
@@ -210,7 +216,6 @@
 				</section>
 			
 				<section id="recu">
-					<a href="#"><img src="img/pexels-mikebirdy-110844tiny.jpg" alt="Stacje ładowania" /></a>
 					<figure>
 						<img src="img/pexels-mikebirdy-110844tiny.jpg" alt="Stacje ładowania">
 						<figcaption>Stacje ładowania, źródło: pexels.com, autor: Mike Birdy</figcaption>
@@ -222,17 +227,137 @@
 			</div>
 		</section>
 
-		<section>
-			<h2>Realizacje</h2>
+		<section id="visual">
+			<h2>Wizualizacje magazynów</h2>
 			<figure>
-				<img src="img/bydgoszcz.jpg" alt="Magazyn Bydgoszcz">
-				<figcaption>Magazyn w Bygoszczy, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
+				<img src="img/barniewice-pk-tiny.jpg" alt="Magazyn Barniewice">
+				<figcaption>Magazyn w Barniewice, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
 			</figure>
 
 			<figure>
-				<img src="img/torun.jpg" alt="Magazyn Toruń">
-				<figcaption>Magazyn w Toruniu, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
+				<img src="img/poznan-pk-tiny.jpg" alt="Magazyn Poznań">
+				<figcaption>Magazyn w Poznań, źródło: Wizualizacja wykonana przez Paulina Kimak </figcaption>
 			</figure>
+		</section>
+
+		<section id="legend">
+			<h2>Przykład stosowanych oznaczeń terenu na podstawie planu miejscowego</h2>
+			<pre>
+				§ 4.1. Ustala się następujące rodzaje przeznaczeń terenów:
+					1) U    tereny usług;
+					2) U-A  tereny biur i usług administracji;
+					3) U-H  tereny usług handlu;
+					4) U-K  tereny usług kultury;
+					5) U-N  tereny usług nauki;
+					6) U-O  tereny usług oświaty;
+					7) U-Op tereny usług oświaty – przedszkola;
+					8) U-Z  tereny usług zdrowia;
+					9) U-P  tereny usług opieki społecznej i socjalnej;
+					10) US  tereny usług sportu i rekreacji;
+					11) MW  tereny zabudowy mieszkaniowej wielorodzinnej;
+					12) ZPp tereny zieleni urządzonej;
+					13) ZPk tereny zieleni urządzonej towarzyszącej pomnikowi „Electio Viritim”;
+					14) KD  tereny ulic publicznych, klasy ulic : G-główna, Z-zbiorcza, L-lokalna, D-dojazdowa;
+					15) KD-P tereny garaży podziemnych;
+					16) KD-PN tereny garaży wielopoziomowych;
+					17) KD-KMa tereny obiektów i urządzeń komunikacji miejskiej – przystanki końcowe autobusowe;
+					18) I-E  tereny obiektów i urządzeń elektroenergetycznych - RSM.
+				</pre>
+		</section>
+
+		<section id="form">
+			<h2>Informacje do analizy</h2>
+			<p>Podaj proszę niezbędne informacje, aby dokonać analizy terenu.</p>
+			<form action="mailto:admin@buildmax.com" method="post">
+				<p>
+					<em><strong>Kraj</strong></em>
+				</p>
+				<div>
+					<input type="text" id="land" name="land">
+				</div><br>
+
+				<p>
+					<em><strong>Miejscowość</strong></em>
+				</p>
+				<div>
+					<input type="text" id="city" name="city">
+				</div><br>
+
+				<p>
+					<em><strong>Ulica</strong></em>
+				</p>
+				<div>
+					<input type="text" id="street" name="street">
+				</div><br>
+
+				<p>
+					<em><strong>Nr działki</strong></em>
+				</p>
+				<div>
+					<input type="text" id="plot" name="plot">
+				</div><br>
+
+				<p>
+					<em><strong>Czy księga wieczysta</strong></em>
+				</p>
+				<div>
+					<input type="radio" name="book" value="yes"> yes
+					<input type="radio" name="book" value="no"> no
+				</div><br>
+
+				<p>
+					<em><strong>Ilość zieleni oczekiwana przez plan miejscowy w procentach</strong></em>
+				</p>
+				<div>
+					<input type="range" id="range" name="range" min="1" max="100">
+				</div><br>
+
+				<p>
+					<em><strong>Prześlij plan miejscowy lub warunki zabudowy:</strong></em>
+				</p>
+				<div>
+					<input type="file" id="file" name="file">
+				</div><br>
+				
+				
+				<!-- Parametry budowlane -->
+				<h4>Dane dotyczące parametrów budowlanych</h4>
+				<p>
+					<em><strong>Wybierz moduł magazynu:</strong></em>
+				</p>
+				<div>
+					<select id="size" name="size">
+						<option value="8x8">8x8</option>
+						<option value="10x10">10x10</option>
+						<option value="12x12">12x12</option>
+					</select>
+				</div><br>
+
+				<p>
+					<em><strong>Elementy dodatkowe:</strong></em>
+				</p>
+				<div>
+					<input type="checkbox" id="smoke" name="mp[]" value="smoke">
+					<label for="smoke">Wiata dla palaczy</label><br>
+					<input type="checkbox" id="bicycle" name="mp[]" value="bicycle">
+					<label for="bicycle">Wiata rowerowa</label><br>
+					<input type="checkbox" id="trash" name="mp[]" value="trash">
+					<label for="trash">Wiata śmietnikowa</label><br>
+					<input type="checkbox" id="recreation" name="mp[]" value="recreation">
+					<label for="recreation">Miejsce rekreacji</label><br>
+				</div><br>
+				
+				<p>
+					<em><strong>Dodatkowe uwagi:</strong></em>
+				</p>
+				<div>
+					<textarea id="comments" name="comments" rows="4" cols="50"></textarea>
+				</div><br>
+			
+				<input type="submit" value="Wyślij">
+			</form>
+			<br>
+			<hr>
 		</section>
 
 		<!-- Footer -->
