@@ -74,7 +74,7 @@
 					wykonanie  planów  zagospodarowania  działki  w  oparciu  o  standard  budowlany  developera.  Wykonanie  standardowej
 					analizy chłonności terenu zajmuje zwykle kilka tygodni. </p>
 				<p>
-					BuildMaX  oblicza  <strong>maksymalna powierzchnię </strong>  zabudowy dla  wybranej  działki  w  oparciu  <br/> o wybrany <strong>standard</strong>  budowlany
+					BuildMaX  oblicza  <strong>maksymalna powierzchnię </strong>  zabudowy dla  wybranej  działki  w  oparciu  o wybrany <strong>standard</strong>  budowlany
 					oraz uwarunkowania przestrzenne i prawne.</p>
 				<a href="#form">Wypełnij formularz</a>
 			</div>
@@ -203,7 +203,8 @@
 					</figure>
 					<h3>Panele fotowoltaiczne</h3>
 					<p>Wydajność instalacji fotowoltaicznej po 10 latach mieści się w granicach 80%. Szacuje się, że panele fotowoltaiczne mogą pracować nawet przez 60 lat, bez przeszkód i większych napraw. .</p>
-					<a href="#">Wiecej</a>
+					<p>Żródło: https://pl.wikipedia.org/wiki/Fotowoltaika/</p>
+					<a href="https://pl.wikipedia.org/wiki/Fotowoltaika">Wiecej</a>
 				</section>
 		
 				<section id="rain">
@@ -213,7 +214,8 @@
 					</figure>
 					<h3>Deszczówka</h3>
 					<p>Woda deszczowa jest wodą czystą, wolną od bakterii, ale w momencie styczności z dachem zostaje zabrudzona i zmienia się w wodę szarą. W systemach gromadzenia wody deszczowej wykorzystuje się cały układ filtrów, dzięki którym woda, zanim trafi do zbiornika, zostaje oczyszczona</p>
-					<a href="#">Wiecej</a>
+					<p>Żródło: https://rceeluban.pl/2020/07/02/woda-z-nieba-recykling-wody-deszczowej-i-roztopowej/</p>
+					<a href="https://rceeluban.pl/2020/07/02/woda-z-nieba-recykling-wody-deszczowej-i-roztopowej/">Wiecej</a>
 				</section>
 			
 				<section id="recu">
@@ -223,7 +225,8 @@
 					</figure>
 					<h3>Stacje ładowania</h3>
 					<p>Stacja ładowania do samochodu elektrycznego AC wykorzystuje prąd zmienny, a jej moc to od 3,7 kW do nawet 43 kW. Produkowana jest w dwóch wariantach – wiszącym, typu wallbox (montowanym na ścianie), i wolnostojącym.</p>
-					<a href="#">Wiecej</a>
+					<p>Żródło: https://stacjomat.pl/stacje-ladowania/</p>
+					<a href="https://stacjomat.pl/stacje-ladowania/">Wiecej</a>
 				</section>
 			</div>
 		</section>
@@ -264,102 +267,79 @@
 					17) KD-KMa tereny obiektów i urządzeń komunikacji miejskiej – przystanki końcowe autobusowe;
 					18) I-E  tereny obiektów i urządzeń elektroenergetycznych - RSM.
 				</pre>
+				<p>Żródło: https://bip.warszawa.pl/web/rada-warszawy/-/uchwala-nr-lxiii-1953-2009-z-2009-10-08-4757056-508311-4877750-1925578-1360431</p>
 		</section>
 
 		<section id="form">
 			<h2>Informacje do analizy</h2>
-			<p>Podaj proszę niezbędne informacje, aby dokonać analizy terenu.</p>
-			<form action="mailto:admin@buildmax.com" method="post">
-				<p>
-					<em><strong>Kraj</strong></em>
-				</p>
-				<div>
-					<input type="text" id="land" name="land">
-				</div><br>
-
-				<p>
-					<em><strong>Miejscowość</strong></em>
-				</p>
-				<div>
-					<input type="text" id="city" name="city">
-				</div><br>
-
-				<p>
-					<em><strong>Ulica</strong></em>
-				</p>
-				<div>
-					<input type="text" id="street" name="street">
-				</div><br>
-
-				<p>
-					<em><strong>Nr działki</strong></em>
-				</p>
-				<div>
-					<input type="text" id="plot" name="plot">
-				</div><br>
-
-				<p>
-					<em><strong>Czy księga wieczysta</strong></em>
-				</p>
-				<div>
-					<input type="radio" name="book" value="yes"> yes
-					<input type="radio" name="book" value="no"> no
-				</div><br>
-
-				<p>
-					<em><strong>Ilość zieleni oczekiwana przez plan miejscowy w procentach</strong></em>
-				</p>
-				<div>
-					<input type="range" id="range" name="range" min="1" max="100">
-				</div><br>
-
-				<p>
-					<em><strong>Prześlij plan miejscowy lub warunki zabudowy:</strong></em>
-				</p>
-				<div>
-					<input type="file" id="file" name="file">
-				</div><br>
-				
-				
-				<!-- Parametry budowlane -->
+			<fieldset>
+			  <legend> Formularz</legend>
+			  <form action="mailto:admin@buildmax.com" method="post">
+		  
+				<label for="land">Kraj:</label>  
+				<input type="text" id="land" name="land" required placeholder="Wpisz nazwę kraju">
+				<br><br>
+		  
+				<label for="city">Miejscowość:</label>  
+				<input type="text" id="city" name="city" required placeholder="Wpisz nazwę miejscowości">
+				<br><br>
+		  
+				<label for="street">Ulica:</label>  
+				<input type="text" id="street" name="street" required placeholder="Wpisz nazwę ulicy">
+				<br><br>
+		  
+				<label for="plot">Nr działki:</label>  
+				<input type="text" id="plot" name="plot" required placeholder="Wpisz numer działki" pattern="^\d{1,5}$" title="Numer działki powinien zawierać tylko cyfry (maksymalnie 5 cyfr)">
+				<br><br>
+		  
+				<label for="book">Czy księga wieczysta:</label>
+				<input type="radio" id="book" name="book" value="yes" required> Tak
+				<input type="radio" id="book" name="book" value="no"> Nie
+				<br><br>
+		  
+				<label for="range">Ilość zieleni oczekiwana przez plan miejscowy w procentach:</label>
+				<input type="range" id="range" name="range" min="1" max="100" required>
+				<br><br>
+		  
+				<label for="file">Prześlij plan miejscowy lub warunki zabudowy:</label>
+				<input type="file" id="file" name="file" required>
+				<br><br>
+		  
 				<h4>Dane dotyczące parametrów budowlanych</h4>
-				<p>
-					<em><strong>Wybierz moduł magazynu:</strong></em>
-				</p>
-				<div>
-					<select id="size" name="size">
-						<option value="8x8">8x8</option>
-						<option value="10x10">10x10</option>
-						<option value="12x12">12x12</option>
-					</select>
-				</div><br>
-
-				<p>
-					<em><strong>Elementy dodatkowe:</strong></em>
-				</p>
-				<div>
-					<input type="checkbox" id="smoke" name="mp[]" value="smoke">
-					<label for="smoke">Wiata dla palaczy</label><br>
-					<input type="checkbox" id="bicycle" name="mp[]" value="bicycle">
-					<label for="bicycle">Wiata rowerowa</label><br>
-					<input type="checkbox" id="trash" name="mp[]" value="trash">
-					<label for="trash">Wiata śmietnikowa</label><br>
-					<input type="checkbox" id="recreation" name="mp[]" value="recreation">
-					<label for="recreation">Miejsce rekreacji</label><br>
-				</div><br>
-				
-				<p>
-					<em><strong>Dodatkowe uwagi:</strong></em>
-				</p>
-				<div>
-					<textarea id="comments" name="comments" rows="4" cols="50"></textarea>
-				</div><br>
-			
+		  
+				<label for="size">Wybierz moduł magazynu:</label>  
+				<select id="size" name="size" required>
+				  <option value="8x8">8x8</option>
+				  <option value="10x10">10x10</option>
+				  <option value="12x12">12x12</option>
+				</select>
+				<br><br>
+		  
+				<label for="smoke">Wiata dla palaczy</label>
+				<input type="checkbox" id="smoke" name="mp[]" value="smoke">
+				<br>
+		  
+				<label for="bicycle">Wiata rowerowa</label>
+				<input type="checkbox" id="bicycle" name="mp[]" value="bicycle">
+				<br>
+		  
+				<label for="trash">Wiata śmietnikowa</label>
+				<input type="checkbox" id="trash" name="mp[]" value="trash">
+				<br>
+		  
+				<label for="recreation">Miejsce rekreacji</label>
+				<input type="checkbox" id="recreation" name="mp[]" value="recreation">
+				<br><br>
+		  
+				<label for="comments">Dodatkowe uwagi:</label>
+				<textarea id="comments" name="comments" rows="4" cols="50" placeholder="Wpisz dodatkowe uwagi" required></textarea>
+				<br><br>
+		  
 				<input type="submit" value="Wyślij">
-			</form>
-			<br>
-			<hr>
-		</section>
+				<input type="reset" value="Reset">
+			  </form>
+			</fieldset>
+		  </section>
 
 		<!-- Footer -->
 		<footer>
