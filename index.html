@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="pl">
 	<head>
-		<meta charset="utf-8" />
+		<meta charset="utf-8">
 		<title>BuildMaX</title>
 		<meta name="keywords" content="magazyn działka powierzchnia">
 		<meta name="description" content="Strona o magazynach">
 		<meta name="author" content="Paulina Kimak">
-		<link rel=stylesheet media=all href="css/style.css" />
+		<link rel=stylesheet media=all href="css/style.css">
 	</head>
 
 	<body>
@@ -62,7 +62,7 @@
 		<!-- Opis -->
 		<section id="use">
 			<fieldset>
-				<h1>BuildMax</h1>
+				<h2>BuildMax</h2>
 				<p>BuildMaX  to  aplikacja  stworzona specjalnie  dla  developerów  magazynowych.</p>
 			</fieldset>
 			<div>
@@ -87,14 +87,14 @@
 			<div id="general">
 				<h2>Wymagane budowle wraz z opisem przeznaczenia</h2>
 				<dl>
-					<dt><h4>Hala przemysłowa</h4></dt>
-					<dd>Miejsce przechowywania towarów lub wydzielona przestrzeń przeznaczona pod działalność produkcyjną</dd>
-					<dt><h4>Biuro</h4></dt>
-					<dd>Przestrzeń o kategorii ZL przeznaczona na długotrwałe przebywanie ludzi.</dd>
-					<dt><h4>Portiernia</h4></dt>
-					<dd>Budnynek służący do nadzorowania dostępu do magazynu.</dd>
-					<dt><h4>Pompownia</h4></dt>
-					<dd>Budnynek techniczny do realizacji zadań związanych z wodą.</dd>
+					<dt>Hala przemysłowa</dt>
+						<dd>Miejsce przechowywania towarów lub wydzielona przestrzeń przeznaczona pod działalność produkcyjną</dd>
+					<dt>Biuro</dt>
+						<dd>Przestrzeń o kategorii ZL przeznaczona na długotrwałe przebywanie ludzi.</dd>
+					<dt>Portiernia</dt>
+						<dd>Budnynek służący do nadzorowania dostępu do magazynu.</dd>
+					<dt>Pompownia</dt>
+						<dd>Budnynek techniczny do realizacji zadań związanych z wodą.</dd>
 				</dl>
 			</div>
 
@@ -136,7 +136,7 @@
 				zainteresowany.  Aplikacja  posiadając  te  dane  oblicza  maksymalną  powierzchnię  zabudowy  uwzględniając  szereg
 				przepisów  prawnych  (MPZP,  WT  oraz  Prawo  Budowlane). 
 			</p>
-			<table id="table1" border=1>
+			<table id="table1">
 				<caption><strong>Przykładowe zestawanie wyliczonych powierzchni</strong></caption>
 				<thead>
 					<tr>
@@ -169,7 +169,7 @@
 			</table>
 			<br>
 
-			<table id="table2" border=1>
+			<table id="table2">
 				<caption><strong>Przykładowe zestawanie parkingów</strong></caption>
 				<thead>
 					<tr>
@@ -185,8 +185,6 @@
 					<tr>
 						<td>Miejsca postojowe dla samochodów cieżarowych</td>
 						<td>15</td>
-					</tr>
-					<tr>
 					</tr>
 				</tbody>
 				</table>
@@ -292,26 +290,31 @@
 				<input type="text" id="plot" name="plot" required placeholder="Wpisz numer działki" pattern="^\d{1,5}$" title="Numer działki powinien zawierać tylko cyfry (maksymalnie 5 cyfr)">
 				<br><br>
 		  
-				<label for="book">Czy księga wieczysta:</label>
-				<input type="radio" id="book" name="book" value="yes" required> Tak
-				<input type="radio" id="book" name="book" value="no"> Nie
+				<label for="book-yes">Czy księga wieczysta:</label><br>
+
+				<input type="radio" id="book-yes" name="book" value="yes" required>
+				<label for="book-yes">Tak</label>
+				
+				<input type="radio" id="book-no" name="book" value="no">
+				<label for="book-no">Nie</label>
+
 				<br><br>
 		  
 				<label for="range">Ilość zieleni oczekiwana przez plan miejscowy w procentach:</label>
-				<input type="range" id="range" name="range" min="1" max="100" required>
+				<input type="range" id="range" name="range" min="1" max="100">
 				<br><br>
 		  
 				<label for="file">Prześlij plan miejscowy lub warunki zabudowy:</label>
-				<input type="file" id="file" name="file" required>
+				<input type="file" id="file" name="file">
 				<br><br>
 		  
 				<h4>Dane dotyczące parametrów budowlanych</h4>
 		  
 				<label for="size">Wybierz moduł magazynu:</label>  
 				<select id="size" name="size" required>
-				  <option value="8x8">8x8</option>
-				  <option value="10x10">10x10</option>
-				  <option value="12x12">12x12</option>
+				  <option value="">8x8</option>
+				  <option value="">10x10</option>
+				  <option value="">12x12</option>
 				</select>
 				<br><br>
 		  
@@ -332,7 +335,7 @@
 				<br><br>
 		  
 				<label for="comments">Dodatkowe uwagi:</label>
-				<textarea id="comments" name="comments" rows="4" cols="50" placeholder="Wpisz dodatkowe uwagi" required></textarea>
+				<textarea id="comments" name="comments" rows="4" cols="50" placeholder="Wpisz dodatkowe uwagi"></textarea>
 				<br><br>
 		  
 				<input type="submit" value="Wyślij">
