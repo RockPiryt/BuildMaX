@@ -1,11 +1,18 @@
-.col1{
-    background: #ebee50;
+
+
+.col-yellow{
+    background: #d4b505;
 }
 
-.col2{
-    background: #f6f871;
-}
-
-.col3{
+.col-grey{
     background: #cacaca;
+}
+
+.col-grey{
+    background: #cacaca;
+}
+
+
+.col-dark{
+    background: #1f1f1f;
 }
