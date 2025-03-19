@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>BuildMax</title>
+    
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		<meta name="keywords" content="magazyn działka powierzchnia">
+		<meta name="description" content="Strona o magazynach">
+		<meta name="author" content="Paulina Kimak">
+        
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+        <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    </head>
+
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-white bg-warning">
+                <a class="navbar-brand" href="#">BuildMaX</a>
+                <button
+                    class="navbar-toggler d-lg-none"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapsibleNavId"
+                    aria-controls="collapsibleNavId"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                ></button>
+                <div class="collapse navbar-collapse" id="collapsibleNavId">
+                    <ul class="navbar-nav me-auto mt-2 mt-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" aria-current="page"
+                                >Home <span class="visually-hidden">(current)</span></a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a
+                                class="nav-link dropdown-toggle"
+                                href="#"
+                                id="dropdownId"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >Dropdown</a
+                            >
+                            <div class="dropdown-menu" aria-labelledby="dropdownId">
+                                <a class="dropdown-item" href="#">Action 1</a>
+                                <a class="dropdown-item" href="#">Action 2</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <form class="d-flex my-2 my-lg-0">
+                        <input
+                            class="form-control me-sm-2"
+                            type="text"
+                            placeholder="Search"
+                        />
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                            Search
+                        </button>
+                    </form>
+                </div>
+            </nav>
+            
+        </header>
+        <main>
+            <div class="container">
+
+                <div class="row justify-content-center align-items-start g-2">
+                    <div class="col-md-8">
+                        <h2>Welcome</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+                            Reprehenderit deserunt, nemo rerum rem, sunt eum suscipit id molestiae quisquam 
+                            sit est aliquid doloribus odit illo alias quod asperiores repudiandae eius.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>Side</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+                    </div>
+                </div>
+
+                <!-- Opis -->
+                <div class="row">
+                    <div class="col-md-10 offset-md-1 justify-content-center align-items-center col3">
+                        <section id="use">
+                            <fieldset>
+                            <div class="page-header">
+                                <h1>BuildMax</h1>
+                            </div>
+                            <p>BuildMaX  to  aplikacja  stworzona specjalnie  dla  developerów  magazynowych.</p>
+                            </fieldset>
+                            <div>
+                            <h2>Zastosowanie BuildMaX</h2>
+                            <p>Decyzja o zakupie działki jest podejmowana przez dewelopera na podstawie analizy chłonności, która określa procent
+                                zabudowy w stosunku do całej działki. Im wyższa wartość procentu zabudowy (powyżej 40 %) tym bardziej opłaca się
+                                zakup działki. Potrzeba także przeanalizować możliwe obszary problemowe takie jak np. duża ilość prac ziemnych czy
+                                stanowiska  archeologiczne.  Proces  ten  jest  czasochłonny  ze  względu  na  potrzebę  analizy  wielu  dokumentów  oraz
+                                wykonanie  planów  zagospodarowania  działki  w  oparciu  o  standard  budowlany  developera.  Wykonanie  standardowej
+                                analizy chłonności terenu zajmuje zwykle kilka tygodni. </p>
+                            <p>
+                                BuildMaX  oblicza  <strong>maksymalna powierzchnię </strong>  zabudowy dla  wybranej  działki  w  oparciu  <br/> o wybrany <strong>standard</strong>  budowlany
+                                oraz uwarunkowania przestrzenne i prawne.</p>
+                            <a href="#form">Wypełnij formularz</a>
+                            </div>
+                        </section>
+                    </div>  
+                </div>
+
+                <div class="row justify-content-center align-items-center g-2">
+                    <div class="col-md-6 justify-content-center align-items-center">
+                        <div class="table-responsive-md">
+                            <table class="table table-striped table-hover table-borderless table-dark align-middle" id="table1">
+                                <thead class="table-light">
+                                    <caption>Przykładowe zestawanie wyliczonych powierzchni</caption>
+                                    <tr>
+                                        <th>Rodzaj</th>
+                                        <th>Procent</th>
+                                        <th>Powierzchnia</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr class="table-secondary">
+                                        <td>Powierzchnia zabudowy</td>
+                                        <td>55%</td>
+                                        <td>1200m2</td>
+                                    </tr>
+                                    <tr class="table-secondary">
+                                        <td>Powierzchnia zieleni</td>
+                                        <td>20%</td>
+                                        <td>578m2</td>
+                                    </tr>
+                                    <tr class="table-secondary">
+                                        <td>Powierzchnia zieleni</td>
+                                        <td>20%</td>
+                                        <td>578m2</td>
+                                    </tr>
+                                    <tr class="table-secondary">
+                                        <td>Powierzchnia utwardzeń</td>
+                                        <td>20%</td>
+                                        <td>242m2</td>
+                                    </tr>
+                                    <tr>
+                                    <td colspan="2"><strong>Całkowita powierzchnia</strong></td>
+                                    <td>1778m2</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                    <!-- single table nr 1end -->
+                    </div>
+
+
+                    <div class="col-md-6 justify-content-center align-items-center">
+                        <div class="table-responsive-md">
+                            <table class="table table-striped table-hover table-borderless table-dark align-middle" id="table2">
+                                <thead class="table-light">
+                                    <caption>Przykładowe zestawanie wyliczonych powierzchni</caption>
+                                    <tr>
+                                        <th>Rodzaj</th>
+                                        <th>Ilość</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr class="table-secondary">
+                                        <td>Miejsca postojowe dla samochodów osobowych</td>
+                                        <td>122</td>
+                                    </tr>
+                                    <tr class="table-secondary">
+                                        <td>Miejsca postojowe dla samochodów cieżarowych</td>
+                                        <td>15</td>
+                                    </tr>
+                                    <tr>
+                                    <td ><strong>Suma</strong></td>
+                                    <td>137</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                    <!-- single table end -->
+                    </div>
+                <!-- tables end     -->
+                </div>
+                
+                
+
+            <!-- container end -->
+            </div>
+            
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>
