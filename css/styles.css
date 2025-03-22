@@ -146,3 +146,39 @@ button{
 .form-control{
     opacity: 0.7;
 }
+
+#legend h2{
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% 0 2% 0;
+}
+
+#legend p{
+    font-size: 0.7em;
+    color: #cacaca;
+    margin: 2%;
+}
+
+
+#visual h2{
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% 0 2% 0;
+}
+
+
+#visual h2{
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% 0 2% 0;
+}
+
+#tables h2{
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% 0 2% 0;
+}
