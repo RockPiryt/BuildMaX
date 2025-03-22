@@ -24,6 +24,12 @@ footer {
     justify-content: flex-end;
 }
 
+#logo{
+    font-size: 2em;
+    color: #1f1f1f;
+    font-weight: 900;
+}
+
 .navbar-nav {
     margin-left: auto;
 }
@@ -43,15 +49,76 @@ figcaption {
     padding: 0;
 }
 
+#general h2 {
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% auto;
+    text-align: center;
+}
+
+#general dd{
+    font-size: 0.9em;
+    color: #cacaca;
+    line-height: 1.5;
+    margin-left: 5%;
+    text-align: center;
+}
+#general dt{
+    font-size: 1.1em;
+    color: #cacaca;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: underline;
+}
+
+#modules h2 {
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% auto;
+}
+
+#modules h4{
+    font-size: 1em;
+    color: #b3b3b3;
+
+}
+
+#modules li {
+    font-size: 0.9em;
+    color: #cacaca;
+    line-height: 1.5;
+}
+#office h2{
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% auto;
+}
+
+#office h4{
+    font-size: 1em;
+    color: #b3b3b3;
+
+}
+
+
+#office li {
+    font-size: 0.9em;
+    color: #cacaca;
+    line-height: 1.5;
+}
+
+
 #use {
     padding: 7%;
     margin: 2% auto;
-    max-width: 800px;
     text-align: center;
 }
 
 #use h1 {
-    font-size: 1.5em;
+    font-size: 2em;
     color: #d4b505;
     font-weight: 900;
     text-transform: uppercase;
@@ -84,7 +151,7 @@ figcaption {
     color: #ffffff;
     height: 100%;
     margin: 4% 2%;
-    padding: 5% 2%;
+    padding: 2% 3%;
 }
 
 .card h3 {
@@ -102,8 +169,6 @@ figcaption {
     font-size: 0.8em;
     color: #222222;
 }
-
-
 
 .col-yellow {
     background: #d4b505;
@@ -144,6 +209,19 @@ figcaption {
 #eco .card {
     flex: 0 0 32%;
 }
+#eco h3 {
+    text-align: center;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+#eco p {
+    text-align: center;
+    color: #cacaca;
+    font-size: 0.7em;
+    text-transform: lowercase;
+}
 
 #myCarousel {
     max-width: 70%;
@@ -167,7 +245,8 @@ figcaption {
 
 #myform h2,
 #legend h2,
-#visual h2 {
+#visual h2,
+#eco {
     font-size: 1.5em;
     color: #d4b505;
     text-transform: uppercase;
