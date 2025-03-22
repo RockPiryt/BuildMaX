@@ -1,5 +1,5 @@
-
-body{
+/* --- Paulina Kimak --- */
+body {
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     line-height: 1.5;
@@ -9,29 +9,33 @@ body{
     padding: 0;
 }
 
-footer{
+footer {
     background: #d4b505;
     color: #1f1f1f;
     padding: 5%;
     margin: 5% 0 0 0;
 }
 
-#navstyle{
+#navstyle {
     background: #d4b505;
     padding: 3%;
     margin: 0 0 3% 0;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: flex-end;
 }
 
-img{
+.navbar-nav {
+    margin-left: auto;
+}
+
+img {
     width: 100%;
     height: auto;
     border-radius: 10px;
-    padding: auto;
-    margin: 3% 0% 3% 0%;
+    margin: 3% 0;
 }
 
-figcaption{
+figcaption {
     font-size: 70%;
     color: #b3b3b3;
     text-align: left;
@@ -39,46 +43,48 @@ figcaption{
     padding: 0;
 }
 
-#use{
+#use {
     padding: 7%;
-    margin: 2% 0% 2% 0%;
-
+    margin: 2% auto;
+    max-width: 800px;
+    text-align: center;
 }
 
-#use h1{
+#use h1 {
     font-size: 1.5em;
     color: #d4b505;
     font-weight: 900;
     text-transform: uppercase;
     margin: 2%;
-
 }
-#use h2{
+
+#use h2 {
     font-size: 1.1em;
     color: #ffffff;
     margin: 2%;
 }
 
-#use p{
-    font-size: 0.7em;
+#use p {
+    font-size: 0.9em;
     color: #cacaca;
     margin: 2%;
 }
 
-#use .btn{
-    font-size: 0.7em;
+#use .btn {
+    font-size: 0.9em;
     background-color: #d4b505;
     color: #1f1f1f;
     margin: 2%;
 }
 
-.card{
+.card {
     background: #1f1f1f;
     border-radius: 10px;
-    padding: 7%;
-    margin: 2%;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     color: #ffffff;
+    height: 100%;
+    margin: 4% 2%;
+    padding: 5% 2%;
 }
 
 .card h3 {
@@ -88,97 +94,87 @@ figcaption{
 }
 
 .card p {
-    font-size: 0.7em;
+    font-size: 0.9em;
     color: #cacaca;
 }
 
 .card .btn {
-    font-size: 0.7em;
+    font-size: 0.8em;
     color: #222222;
-    
 }
 
 
-.col-yellow{
+
+.col-yellow {
     background: #d4b505;
 }
 
-.col-grey{
+.col-grey {
     background: #cacaca;
 }
 
-.col-grey{
-    background: #cacaca;
-}
-
-
-.col-dark{
+.col-dark {
     background: #1f1f1f;
 }
 
-#myform h2{
+#tables h2 {
     font-size: 1.5em;
     color: #d4b505;
     text-transform: uppercase;
-    margin: 2% 0 2% 0;
-
+    margin: 2% auto;
+    text-align: center;
 }
 
-.form-group{
-    margin: 2%;
+#tables .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
-button{
-    font-size: 0.7em;
-    background-color: #d4b505;
-    color: #1f1f1f;
-    margin: 2% 0 2% 0;
+#tables .col-md-6 {
+    flex: 0 0 48%;
 }
 
-#formstyle{
+#eco .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#eco .card {
+    flex: 0 0 32%;
+}
+
+#myCarousel {
+    max-width: 70%;
+    margin: 0 auto;
+}
+
+#formstyle {
     padding: 7%;
     margin: 2%;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     color: #cacaca;
-
+    border: 3px solid #d4b505;
 }
 
-.form-control{
+.form-control {
     opacity: 0.7;
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #d4b505;
 }
 
-#legend h2{
+#myform h2,
+#legend h2,
+#visual h2 {
     font-size: 1.5em;
     color: #d4b505;
     text-transform: uppercase;
-    margin: 2% 0 2% 0;
+    margin: 2% 0;
 }
 
-#legend p{
-    font-size: 0.7em;
-    color: #cacaca;
-    margin: 2%;
-}
-
-
-#visual h2{
-    font-size: 1.5em;
-    color: #d4b505;
-    text-transform: uppercase;
-    margin: 2% 0 2% 0;
-}
-
-
-#visual h2{
-    font-size: 1.5em;
-    color: #d4b505;
-    text-transform: uppercase;
-    margin: 2% 0 2% 0;
-}
-
-#tables h2{
-    font-size: 1.5em;
-    color: #d4b505;
-    text-transform: uppercase;
-    margin: 2% 0 2% 0;
+button.btn-outline-warning,
+button.btn-outline-secondary {
+    margin: 2% 1% 0 0;
 }
