@@ -234,9 +234,25 @@ figcaption {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     color: #cacaca;
     border: 3px solid #d4b505;
+    line-height: 1.5;
 }
 
 .form-control {
+    opacity: 0.7;
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #d4b505;
+    line-height: 1;
+    margin: 2% 0;
+}
+.form-group{
+    margin: 2% 0;
+}
+#formstyle ::placeholder {
+    color: #cacaca;
+}
+
+#comments {
     opacity: 0.7;
     background-color: #333333;
     color: #ffffff;
@@ -253,7 +269,18 @@ figcaption {
     margin: 2% 0;
 }
 
+#legend p{
+    font-size: 0.9em;
+    color: #cacaca;
+    line-height: 1.5;
+    margin: 2% 0;
+}
+
 button.btn-outline-warning,
 button.btn-outline-secondary {
     margin: 2% 1% 0 0;
+}
+
+#file {
+    background: #333333;
 }
