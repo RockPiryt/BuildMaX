@@ -19,7 +19,7 @@
 
     <body>
         <header>
-            <nav class="navbar navbar-expand-sm navbar-white bg-warning">
+            <nav class="navbar navbar-expand-sm navbar-white bg-warning" id="navstyle">
                 <a class="navbar-brand" href="#">BuildMaX</a>
                 <button
                     class="navbar-toggler d-lg-none"
@@ -32,40 +32,41 @@
                 ></button>
                 <div class="collapse navbar-collapse" id="collapsibleNavId">
                     <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#" aria-current="page"
-                                >Home <span class="visually-hidden">(current)</span></a
-                            >
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Strona domowa<span class="visually-hidden">(current)</span></a></li>
+                        <li class="nav-item"><a class="nav-link"href="#use">Zastosowanie</a></li>
                         <li class="nav-item dropdown">
                             <a
                                 class="nav-link dropdown-toggle"
-                                href="#"
+                                href="#general"
                                 id="dropdownId"
                                 data-bs-toggle="dropdown"
                                 aria-haspopup="true"
                                 aria-expanded="false"
-                                >Dropdown</a
-                            >
+                                >Wymagania</a>
                             <div class="dropdown-menu" aria-labelledby="dropdownId">
-                                <a class="dropdown-item" href="#">Action 1</a>
-                                <a class="dropdown-item" href="#">Action 2</a>
+                                <a class="dropdown-item" href="#tables">Zestawienia</a>
+                                <a class="dropdown-item" href="#modules">Standardy</a>
                             </div>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a
+                                class="nav-link dropdown-toggle"
+                                href="#eco"
+                                id="dropdownId"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >Eco rozwiązania</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownId">
+                                <a class="dropdown-item" href="#solar">Panele solarne</a>
+                                <a class="dropdown-item" href="#recu">Rekuperacja</a>
+                                <a class="dropdown-item" href="#rain">Wykorzystanie deszczówki</a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="#visual">Wizualizacje</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#legend">Oznaczenia</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#form">Formularz</a></li>
                     </ul>
-                    <form class="d-flex my-2 my-lg-0">
-                        <input
-                            class="form-control me-sm-2"
-                            type="text"
-                            placeholder="Search"
-                        />
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                            Search
-                        </button>
-                    </form>
                 </div>
             </nav>
             
@@ -73,22 +74,10 @@
         <main>
             <div class="container">
 
-                <div class="row justify-content-center align-items-start g-2">
-                    <div class="col-md-8">
-                        <h2>Welcome</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
-                            Reprehenderit deserunt, nemo rerum rem, sunt eum suscipit id molestiae quisquam 
-                            sit est aliquid doloribus odit illo alias quod asperiores repudiandae eius.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h2>Side</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
-                    </div>
-                </div>
 
                 <!-- Opis -->
                 <div class="row">
-                    <div class="col-md-10 offset-md-1 justify-content-center align-items-center text-white col-dark id="use">
+                    <div class="col-md-10 offset-md-1 text-center text-white col-dark" id="use">
                         <section id="use">
                             <fieldset>
                             <div class="page-header">
@@ -193,6 +182,7 @@
                     </div>
                 <!-- tables end     -->
                 </div>
+                
 
                 <!-- Eko rozwiązania -->
                 <div class="row">
@@ -203,9 +193,9 @@
                         </div>
                 </div>
         
-                    <div class="row">
+                <div class="row">
         
-                    <div class="col-xs-12 col-sm-6 col-md-4 col1" id="solar">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col1 card border-warning" id="solar">
                         <article class="eco-art">
                         <figure>
                             <img src="img/pexels-pixabay-356036tiny.jpg" alt="Fotowoltaika">
@@ -213,11 +203,11 @@
                         </figure>
                         <h3>Panele fotowoltaiczne</h3>
                         <p>Wydajność instalacji fotowoltaicznej po 10 latach mieści się w granicach 80%. Szacuje się, że panele fotowoltaiczne mogą pracować nawet przez 60 lat, bez przeszkód i większych napraw. .</p>
-                        <a href="#">Wiecej</a>
+                        <p><a href="#" class="btn btn-warning">Wiecej</a></p>
                         </article>
                     </div>
         
-                    <div class="col-xs-12 col-sm-6 col-md-4 col2" id="rain">
+                    <div class="col-xs-12 col-sm-6 col-md-4 card border-warning" id="rain">
                         <article class="eco-art">
                         <figure>
                             <img src="img/pexels-pixabay-40731tiny.jpg" alt="Woda opadowa">
@@ -225,11 +215,11 @@
                         </figure>
                         <h3>Deszczówka</h3>
                         <p>Woda deszczowa jest wodą czystą, wolną od bakterii, ale w momencie styczności z dachem zostaje zabrudzona i zmienia się w wodę szarą. W systemach gromadzenia wody deszczowej wykorzystuje się cały układ filtrów, dzięki którym woda, zanim trafi do zbiornika, zostaje oczyszczona</p>
-                        <a href="#">Wiecej</a>
+                        <p><a href="#" class="btn btn-warning">Wiecej</a></p>
                         </article>
                     </div>
         
-                    <div class="col-xs-12 col-sm-6 col-md-4 col1" id="recu">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col1 card border-warning" id="recu">
                         <article class="eco-art">
                         <figure>
                             <img src="img/pexels-mikebirdy-110844tiny.jpg" alt="Stacje ładowania">
@@ -237,7 +227,7 @@
                         </figure>
                         <h3>Stacje ładowania</h3>
                         <p>Stacja ładowania do samochodu elektrycznego AC wykorzystuje prąd zmienny, a jej moc to od 3,7 kW do nawet 43 kW. Produkowana jest w dwóch wariantach – wiszącym, typu wallbox (montowanym na ścianie), i wolnostojącym.</p>
-                        <a href="#">Wiecej</a>
+                        <p><a href="#" class="btn btn-warning">Wiecej</a></p>
                         </article>
                     </div>
         
