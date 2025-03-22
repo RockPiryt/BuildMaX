@@ -235,15 +235,109 @@
                     <!-- eco end -->
                 </div>
                 
+                <!-- form -->
+                <div class="row" id="formstyle">
+                    <section id="myform">
+                        <h2>Informacje do analizy</h2>
+                        <fieldset>
+                        <legend> Formularz</legend>
+                        <form class="form" action="mailto:admin@buildmax.com" method="post">
+                            <div class="form-group">
+                                <label for="land">Kraj:</label>  
+                                <input type="text" id="land"  class="form-control" name="land" required placeholder="Wpisz nazwę kraju">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="city">Miejscowość:</label>  
+                                <input type="text" id="city" class="form-control"  name="city" required placeholder="Wpisz nazwę miejscowości">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="street">Ulica:</label>  
+                                <input type="text" id="street" class="form-control" name="street" required placeholder="Wpisz nazwę ulicy">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="plot">Nr działki:</label>  
+                                <input type="text" id="plot" class="form-control" name="plot" required placeholder="Wpisz numer działki" pattern="^\d{1,5}$" title="Numer działki powinien zawierać tylko cyfry (maksymalnie 5 cyfr)">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="book-yes">Czy księga wieczysta:</label><br>
+                
+                                <input type="radio" id="book-yes" name="book" value="yes" required>
+                                <label for="book-yes">Tak</label>
+                                
+                                <input type="radio" id="book-no" name="book" value="no">
+                                <label for="book-no">Nie</label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="range">Ilość zieleni oczekiwana przez plan miejscowy w procentach:</label>
+                                <input type="range" id="range" name="range" min="1" max="100">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="file">Prześlij plan miejscowy lub warunki zabudowy:</label>
+                                <input type="file" id="file" name="file">
+                            </div>
+                    
+                            <h4>Dane dotyczące parametrów budowlanych</h4>
+                            
+                            <div class="form-group">
+                                <label for="size">Wybierz moduł magazynu:</label>  
+                                <select id="size" name="size" required>
+                                    <option value="">8x8</option>
+                                    <option value="">10x10</option>
+                                    <option value="">12x12</option>
+                                </select>
+                            </div>
+                            <p>Wybierz dodatkowe budowlne:</p>
+                            <div class="form-group">
+                                <label for="smoke">Wiata dla palaczy</label>
+                                <input type="checkbox" id="smoke" name="mp[]" value="smoke">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bicycle">Wiata rowerowa</label>
+                                <input type="checkbox" id="bicycle" name="mp[]" value="bicycle">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="trash">Wiata śmietnikowa</label>
+                                <input type="checkbox" id="trash" name="mp[]" value="trash">
+                            </div>
+                            <div class="form-group">
+                                <label for="recreation">Miejsce rekreacji</label>
+                                <input type="checkbox" id="recreation" name="mp[]" value="recreation">
+                            </div>
+                            <div class="form-group"></div>
+                                <label for="comments">Dodatkowe uwagi:</label>
+                                <textarea id="comments" name="comments" rows="4" cols="50" placeholder="Wpisz dodatkowe uwagi"></textarea>
+                            </div>
+                            <div>
+                                <button type="button"class="btn btn-outline-warning">Wyślij</button>
+                                <button type="button"class="btn btn-outline-secondary">Reset</button>
+                            </div>
+                        </form>
+                        </fieldset>
+                    </section>
+                  <!-- form end -->
+                </div>
+                
                 
 
             <!-- container end -->
             </div>
             
         </main>
-        <footer>
-            <!-- place footer here -->
-        </footer>
+        <!-- Footer -->
+		<footer>
+			<details>
+				<summary>&copy; Wszelkie prawa zastrzeżone 2025</summary>
+				<p>Autor: Paulina Kimak</p>
+			</details>
+		</footer>
         <!-- Bootstrap JavaScript Libraries -->
         <script
             src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
