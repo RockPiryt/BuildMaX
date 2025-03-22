@@ -9,6 +9,13 @@ body{
     padding: 0;
 }
 
+footer{
+    background: #d4b505;
+    color: #1f1f1f;
+    padding: 5%;
+    margin: 5% 0 0 0;
+}
+
 #navstyle{
     background: #d4b505;
     padding: 3%;
@@ -40,7 +47,8 @@ figcaption{
 
 #use h1{
     font-size: 1.5em;
-    color: #ffffff;
+    color: #d4b505;
+    font-weight: 900;
     text-transform: uppercase;
     margin: 2%;
 
@@ -106,4 +114,35 @@ figcaption{
 
 .col-dark{
     background: #1f1f1f;
+}
+
+#myform h2{
+    font-size: 1.5em;
+    color: #d4b505;
+    text-transform: uppercase;
+    margin: 2% 0 2% 0;
+
+}
+
+.form-group{
+    margin: 2%;
+}
+
+button{
+    font-size: 0.7em;
+    background-color: #d4b505;
+    color: #1f1f1f;
+    margin: 2% 0 2% 0;
+}
+
+#formstyle{
+    padding: 7%;
+    margin: 2%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    color: #cacaca;
+
+}
+
+.form-control{
+    opacity: 0.7;
 }
