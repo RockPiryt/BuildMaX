@@ -1,0 +1,1 @@
+Wyznaczyć kąt padania promieni słonecznych na powierzchnię pionową budynku dla określonego dnia, godziny i lokalizacji.

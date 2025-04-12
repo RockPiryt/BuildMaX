@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Plan magazynów</title>
+    <style>
+        body { font-family: sans-serif; padding: 2em; }
+        svg { border: 1px solid #ccc; background: #f0f0f0; }
+        button { margin-top: 1em; }
+    </style>
+</head>
+<body>
+
+<h1>Plan magazynów</h1>
+<svg id="plot"></svg><br>
+<button onclick="downloadSVG()">📥 Zapisz SVG do pliku</button>
+
+<script>
+fetch('/api/modules')
+    .then(res => res.json())
+    .then(data => draw(data));
+
+function draw(modules) {
+    const svg = document.getElementById('plot');
+    const scale = 20;
+    svg.innerHTML = "";
+
+    let maxX = 0, maxY = 0;
+
+    modules.forEach(mod => {
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", mod.x * scale);
+        rect.setAttribute("y", mod.y * scale);
+        rect.setAttribute("width", mod.width * scale);
+        rect.setAttribute("height", mod.height * scale);
+        rect.setAttribute("fill", "#87CEEB");
+        rect.setAttribute("stroke", "#333");
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", (mod.x + mod.width / 2) * scale);
+        label.setAttribute("y", (mod.y + mod.height / 2) * scale);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("dominant-baseline", "middle");
+        label.setAttribute("font-size", "12px");
+        label.textContent = mod.id;
+
+        group.appendChild(rect);
+        group.appendChild(label);
+        svg.appendChild(group);
+
+        maxX = Math.max(maxX, mod.x + mod.width);
+        maxY = Math.max(maxY, mod.y + mod.height);
+    });
+
+    svg.setAttribute("width", maxX * scale);
+    svg.setAttribute("height", maxY * scale);
+}
+
+function downloadSVG() {
+    const svg = document.getElementById('plot');
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svg);
+    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "plan.svg";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+</script>
+
+</body>
+</html>

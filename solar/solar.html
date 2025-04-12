@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Analiza Nasłonecznienia</title>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$']],
+        displayMath: [['$$', '$$']]
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: Georgia;
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+    input {
+      margin: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌞 Analiza Nasłonecznienia</h1>
+  <p>Wprowadź dane:</p>
+
+  <form id="sunForm">
+    <label>Szerokość geograficzna (°): <input type="number" id="latitude" value="52"></label><br>
+    <label>Data: <input type="date" id="date" value="2025-03-21"></label><br>
+    <label>Godzina (solar time): <input type="number" id="hour" value="10"></label><br>
+    <label>Wysokość obiektu (m): <input type="number" id="height" value="3"></label><br><br>
+    <button type="button" onclick="calculate()">Oblicz</button>
+  </form>
+
+  <h2>📘 Wyniki:</h2>
+  <div id="results"></div>
+
+  <script>
+    function degToRad(deg) {
+      return deg * Math.PI / 180;
+    }
+
+    function radToDeg(rad) {
+      return rad * 180 / Math.PI;
+    }
+
+    function getDayOfYear(dateString) {
+      const date = new Date(dateString);
+      const start = new Date(date.getFullYear(), 0, 0);
+      const diff = date - start + (start.getTimezoneOffset() - date.getTimezoneOffset()) * 60 * 1000;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
+    }
+
+    function calculate() {
+      const lat = parseFloat(document.getElementById('latitude').value);
+      const dateStr = document.getElementById('date').value;
+      const day = getDayOfYear(dateStr);
+      const hour = parseFloat(document.getElementById('hour').value);
+      const height = parseFloat(document.getElementById('height').value);
+
+      const decl = 23.45 * Math.sin(degToRad((360 / 365) * (284 + day)));
+      const hAngle = 15 * (hour - 12);
+
+      const alpha = Math.asin(
+        Math.sin(degToRad(lat)) * Math.sin(degToRad(decl)) +
+        Math.cos(degToRad(lat)) * Math.cos(degToRad(decl)) * Math.cos(degToRad(hAngle))
+      );
+
+      const alphaDeg = radToDeg(alpha);
+      const shadow = height / Math.tan(alpha);
+
+      const output = `
+        $$\\text{Wybrana data:}\\quad ${dateStr} \\Rightarrow n = ${day}$$
+        $$\\delta = 23.45^\\circ \\cdot \\sin\\left( \\frac{360}{365} \\cdot (284 + ${day}) \\right) = ${decl.toFixed(2)}^\\circ$$
+        $$h = 15^\\circ \\cdot (${hour} - 12) = ${hAngle.toFixed(2)}^\\circ$$
+        $$\\alpha = \\arcsin(\\sin(${lat}^\\circ) \\cdot \\sin(${decl.toFixed(2)}^\\circ) + \\cos(${lat}^\\circ) \\cdot \\cos(${decl.toFixed(2)}^\\circ) \\cdot \\cos(${hAngle.toFixed(2)}^\\circ)) = ${alphaDeg.toFixed(2)}^\\circ$$
+        <br>
+        $$\\text{Długość cienia} = \\frac{${height}}{\\tan(${alphaDeg.toFixed(2)}^\\circ)} = ${shadow.toFixed(2)}\\,m$$
+      `;
+
+      document.getElementById('results').innerHTML = output;
+      MathJax.typeset();
+    }
+  </script>
+
+</body>
+</html>
