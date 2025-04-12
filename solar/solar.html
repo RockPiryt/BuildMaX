@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Analiza Nasłonecznienia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  
   <script>
     MathJax = {
       tex: {
@@ -12,73 +14,109 @@
     };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <style>
     body {
-      font-family: Georgia;
-      max-width: 800px;
+      font-family: 'Roboto', sans-serif;
+      max-width: 900px;
       margin: 30px auto;
       padding: 20px;
+      line-height: 1.6;
     }
     input, select {
       margin: 4px;
       padding: 4px;
     }
+    .section {
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>🌞 Analiza Nasłonecznienia</h1>
-  <p>Wprowadź dane:</p>
+  <div class="section">
+    <h2>Wzory i legenda</h2>
+    <p>Poniższe wzory służą do obliczenia kąta wysokości słońca nad horyzontem oraz długości cienia rzucanego przez obiekt:</p>
+    
+    <b>Wzory:</b>
+    <div id="formulas">
+      $$n = \text{numer dnia w roku (np. 21 marca = 80)}$$
+      $$\delta = 23.45^\circ \cdot \sin\left( \frac{360}{365} \cdot (284 + n) \right)$$
+      $$h = 15^\circ \cdot (t_{\text{solarne}} - 12)$$
+      $$\alpha = \arcsin(\sin(\phi) \cdot \sin(\delta) + \cos(\phi) \cdot \cos(\delta) \cdot \cos(h))$$
+      $$\text{Cień} = \frac{H}{\tan(\alpha)}$$
+      <br>
+      <b>Legenda:</b><br>
+      $n$ – numer dnia w roku<br>
+      $\phi$ – szerokość geograficzna [°]<br>
+      $\delta$ – deklinacja słoneczna [°]<br>
+      $h$ – kąt godzinowy [°]<br>
+      $t_{\text{solarne}}$ – czas słoneczny (godzina)<br>
+      $\alpha$ – kąt wysokości słońca nad horyzontem [°]<br>
+      $H$ – wysokość obiektu [m]<br>
+      $\text{Cień}$ – długość cienia [m]
+    </div>
+  </div>
 
-  <form id="sunForm">
-    <label>Miasto wojewódzkie: 
-      <select id="city" onchange="setLatitudeFromCity()">
-        <option value="">-- wybierz --</option>
-        <option value="52.2297">Warszawa</option>
-        <option value="50.0647">Kraków</option>
-        <option value="51.1079">Wrocław</option>
-        <option value="53.4285">Szczecin</option>
-        <option value="53.0138">Olsztyn</option>
-        <option value="53.1325">Białystok</option>
-        <option value="54.3520">Gdańsk</option>
-        <option value="51.7592">Łódź</option>
-        <option value="52.4064">Poznań</option>
-        <option value="51.2465">Lublin</option>
-        <option value="50.0413">Rzeszów</option>
-        <option value="50.8703">Kielce</option>
-        <option value="50.8661">Katowice</option>
-        <option value="51.9356">Zielona Góra</option>
-        <option value="54.0902">Koszalin</option>
-        <option value="52.2298">Opole</option>
-      </select>
-    </label><br>
+  <div class="section">
+    <h2>Dane wejściowe</h2>
+    <form id="sunForm">
+      <label>Miasto wojewódzkie: 
+        <select id="city" onchange="setLatitudeFromCity()">
+          <option value="">-- wybierz --</option>
+          <option value="52.2297">Warszawa</option>
+          <option value="50.0647">Kraków</option>
+          <option value="51.1079">Wrocław</option>
+          <option value="53.4285">Szczecin</option>
+          <option value="53.0138">Olsztyn</option>
+          <option value="53.1325">Białystok</option>
+          <option value="54.3520">Gdańsk</option>
+          <option value="51.7592">Łódź</option>
+          <option value="52.4064">Poznań</option>
+          <option value="51.2465">Lublin</option>
+          <option value="50.0413">Rzeszów</option>
+          <option value="50.8703">Kielce</option>
+          <option value="50.8661">Katowice</option>
+          <option value="51.9356">Zielona Góra</option>
+          <option value="54.0902">Koszalin</option>
+          <option value="52.2298">Opole</option>
+        </select>
+      </label><br>
 
-    <label>Szerokość geograficzna (°): 
-      <input type="number" id="latitude" step="0.0001" value="52">
-    </label><br>
+      <label>Szerokość geograficzna (°): 
+        <input type="number" id="latitude" step="0.0001" value="52">
+      </label><br>
 
-    <label>Data: 
-      <input type="date" id="date" value="2025-03-21">
-    </label><br>
+      <label>Data: 
+        <input type="date" id="date" value="2025-03-21">
+      </label><br>
 
-    <label>Godzina (solar time): 
-      <input type="number" id="hour" value="10">
-    </label><br>
+      <label>Godzina (czas słoneczny): 
+        <input type="number" id="hour" value="10">
+      </label><br>
 
-    <label>Wysokość obiektu (m): 
-      <select id="heightSelect" onchange="handleHeightSelect()">
-        <option value="">-- wybierz --</option>
-        <option value="10">10</option>
-        <option value="12">12</option>
-      </select>
-      lub wpisz: <input type="number" id="heightInput" step="0.1" value="3">
-    </label><br><br>
+      <label>Wysokość obiektu (m): 
+        <select id="heightSelect" onchange="handleHeightSelect()">
+          <option value="">-- wybierz --</option>
+          <option value="10">10</option>
+          <option value="12">12</option>
+        </select>
+        lub wpisz: <input type="number" id="heightInput" step="0.1" value="3">
+      </label><br><br>
 
-    <button type="button" onclick="calculate()">Oblicz</button>
-  </form>
+      <button type="button" onclick="calculate()">Oblicz</button>
+    </form>
+  </div>
 
-  <h2>📘 Wyniki:</h2>
-  <div id="results"></div>
+  <div class="section">
+    <h2>Ustawienia użytkownika</h2>
+    <div id="userSettings"></div>
+  </div>
+
+  <div class="section">
+    <h2>Obliczenia</h2>
+    <div id="results"></div>
+  </div>
 
   <script>
     function degToRad(deg) {
@@ -114,6 +152,7 @@
     }
 
     function calculate() {
+      const city = document.getElementById('city').selectedOptions[0].text;
       const lat = parseFloat(document.getElementById('latitude').value);
       const dateStr = document.getElementById('date').value;
       const day = getDayOfYear(dateStr);
@@ -131,8 +170,18 @@
       const alphaDeg = radToDeg(alpha);
       const shadow = height / Math.tan(alpha);
 
+      document.getElementById('userSettings').innerHTML = `
+        <ul>
+          <li><b>Miasto:</b> ${city !== "-- wybierz --" ? city : "Nie wybrano"}</li>
+          <li><b>Szerokość geograficzna:</b> ${lat}°</li>
+          <li><b>Data:</b> ${dateStr}</li>
+          <li><b>Godzina (czas słoneczny):</b> ${hour}:00</li>
+          <li><b>Wysokość obiektu:</b> ${height} m</li>
+        </ul>
+      `;
+
       const output = `
-        $$\\text{Wybrana data:}\\quad ${dateStr} \\Rightarrow n = ${day}$$
+        $$n = ${day}$$
         $$\\delta = 23.45^\\circ \\cdot \\sin\\left( \\frac{360}{365} \\cdot (284 + ${day}) \\right) = ${decl.toFixed(2)}^\\circ$$
         $$h = 15^\\circ \\cdot (${hour} - 12) = ${hAngle.toFixed(2)}^\\circ$$
         $$\\alpha = \\arcsin(\\sin(${lat}^\\circ) \\cdot \\sin(${decl.toFixed(2)}^\\circ) + \\cos(${lat}^\\circ) \\cdot \\cos(${decl.toFixed(2)}^\\circ) \\cdot \\cos(${hAngle.toFixed(2)}^\\circ)) = ${alphaDeg.toFixed(2)}^\\circ$$
