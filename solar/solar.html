@@ -19,8 +19,9 @@
       margin: 30px auto;
       padding: 20px;
     }
-    input {
+    input, select {
       margin: 4px;
+      padding: 4px;
     }
   </style>
 </head>
@@ -30,10 +31,49 @@
   <p>Wprowadź dane:</p>
 
   <form id="sunForm">
-    <label>Szerokość geograficzna (°): <input type="number" id="latitude" value="52"></label><br>
-    <label>Data: <input type="date" id="date" value="2025-03-21"></label><br>
-    <label>Godzina (solar time): <input type="number" id="hour" value="10"></label><br>
-    <label>Wysokość obiektu (m): <input type="number" id="height" value="3"></label><br><br>
+    <label>Miasto wojewódzkie: 
+      <select id="city" onchange="setLatitudeFromCity()">
+        <option value="">-- wybierz --</option>
+        <option value="52.2297">Warszawa</option>
+        <option value="50.0647">Kraków</option>
+        <option value="51.1079">Wrocław</option>
+        <option value="53.4285">Szczecin</option>
+        <option value="53.0138">Olsztyn</option>
+        <option value="53.1325">Białystok</option>
+        <option value="54.3520">Gdańsk</option>
+        <option value="51.7592">Łódź</option>
+        <option value="52.4064">Poznań</option>
+        <option value="51.2465">Lublin</option>
+        <option value="50.0413">Rzeszów</option>
+        <option value="50.8703">Kielce</option>
+        <option value="50.8661">Katowice</option>
+        <option value="51.9356">Zielona Góra</option>
+        <option value="54.0902">Koszalin</option>
+        <option value="52.2298">Opole</option>
+      </select>
+    </label><br>
+
+    <label>Szerokość geograficzna (°): 
+      <input type="number" id="latitude" step="0.0001" value="52">
+    </label><br>
+
+    <label>Data: 
+      <input type="date" id="date" value="2025-03-21">
+    </label><br>
+
+    <label>Godzina (solar time): 
+      <input type="number" id="hour" value="10">
+    </label><br>
+
+    <label>Wysokość obiektu (m): 
+      <select id="heightSelect" onchange="handleHeightSelect()">
+        <option value="">-- wybierz --</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+      </select>
+      lub wpisz: <input type="number" id="heightInput" step="0.1" value="3">
+    </label><br><br>
+
     <button type="button" onclick="calculate()">Oblicz</button>
   </form>
 
@@ -57,12 +97,28 @@
       return Math.floor(diff / oneDay);
     }
 
+    function setLatitudeFromCity() {
+      const citySelect = document.getElementById("city");
+      const latitudeInput = document.getElementById("latitude");
+      const selectedValue = citySelect.value;
+      if (selectedValue) {
+        latitudeInput.value = selectedValue;
+      }
+    }
+
+    function handleHeightSelect() {
+      const selected = document.getElementById("heightSelect").value;
+      if (selected) {
+        document.getElementById("heightInput").value = selected;
+      }
+    }
+
     function calculate() {
       const lat = parseFloat(document.getElementById('latitude').value);
       const dateStr = document.getElementById('date').value;
       const day = getDayOfYear(dateStr);
       const hour = parseFloat(document.getElementById('hour').value);
-      const height = parseFloat(document.getElementById('height').value);
+      const height = parseFloat(document.getElementById('heightInput').value);
 
       const decl = 23.45 * Math.sin(degToRad((360 / 365) * (284 + day)));
       const hAngle = 15 * (hour - 12);
