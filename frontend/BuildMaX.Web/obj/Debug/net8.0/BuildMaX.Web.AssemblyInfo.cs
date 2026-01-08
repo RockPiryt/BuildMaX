@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BuildMaX.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+de11b6f4b18e57c2602d173e51188c7f29b7369e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3aa3cadf0b6e378b283c56a6b58980d678a1d33e")]
 [assembly: System.Reflection.AssemblyProductAttribute("BuildMaX.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BuildMaX.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
