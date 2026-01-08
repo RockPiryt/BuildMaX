@@ -26,3 +26,81 @@ go.work.sum
 
 /BuildMaX/solar/analiza_nasłonecznienia.txt
 /BuildMaX/solar/opis zad.txt
+
+# Build results
+bin/
+obj/
+out/
+
+# Rider / VS / VSCode
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS / system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Node / frontend (jeśli kiedyś dodasz)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment / secrets
+.env
+.env.*
+secrets.json
+
+# App settings (opcjonalnie)
+appsettings.Development.json
+
+# EF Core
+Migrations/*.Designer.cs
+Migrations/*.resx
+
+# Publish output
+publish/
+
+# Test results
+TestResults/
+
+# Azure / deployment
+.azure/
+*.publishsettings
+
+# SQL / local db files
+*.mdf
+*.ldf
+
+# Coverage
+coverage/
+*.opencover.xml
+
+# Backup files
+*.bak
+*.tmp
+*.temp
+
+# JetBrains
+*.DotSettings.user
+
+# Visual Studio database
+*.dbmdl
+
+# Misc
+_ReSharper*
+
