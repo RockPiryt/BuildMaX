@@ -1,0 +1,47 @@
+@model BuildMaX.Web.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1>Dashboard</h1>
+
+<div class="card">
+    <h2>Status analiz</h2>
+    <ul>
+        @foreach (var s in Model.StatusStats)
+        {
+            <li>@s.Status : @s.Count</li>
+        }
+    </ul>
+
+    <p>
+        Średni procent zabudowy:
+        <strong>@(Model.AverageBuiltUpPercent?.ToString("0.##") ?? "-") %</strong>
+    </p>
+</div>
+
+<div class="card" style="margin-top:20px;">
+    <h2>Ostatnie analizy</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Wariant</th>
+                <th>Status</th>
+                <th>Zabudowa %</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var r in Model.LatestRequests)
+        {
+            <tr>
+                <td>@r.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td>@r.Variant?.Name</td>
+                <td>@r.Status</td>
+                <td>@r.BuiltUpPercent?.ToString("0.##")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
