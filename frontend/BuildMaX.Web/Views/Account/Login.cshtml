@@ -1,0 +1,35 @@
+@model BuildMaX.Web.Models.ViewModels.Auth.LoginViewModel
+@{
+    ViewData["Title"] = "Logowanie";
+}
+
+<h2>Logowanie</h2>
+
+<form asp-action="Login" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All"></div>
+
+    <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+
+    <div>
+        <label asp-for="RememberMe"></label>
+        <input asp-for="RememberMe" />
+    </div>
+
+    <button type="submit">Zaloguj</button>
+</form>
+
+<p>
+    Nie masz konta? <a asp-action="Register">Zarejestruj się</a>
+</p>
