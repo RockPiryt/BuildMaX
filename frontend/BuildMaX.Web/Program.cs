@@ -1,4 +1,5 @@
 using BuildMaX.Web.Data;
+using BuildMaX.Web.Data.Seed;
 using BuildMaX.Web.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,6 @@
+using BuildMaX.Web.Models.Domain;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using BuildMaX.Web.Models.Domain;
 
 namespace BuildMaX.Web.Helpers.HtmlHelpers
 {
@@ -13,7 +13,15 @@ namespace BuildMaX.Web.Helpers.HtmlHelpers
             foreach (var d in docs)
             {
                 var li = new TagBuilder("li");
-                li.InnerHtml.Append($"{d.Title} ({d.DocumentType})");
+                var category = string.IsNullOrWhiteSpace(d.Category) ? "Inne" : d.Category;
+                li.InnerHtml.AppendHtml($"{d.Title} ({category}) - ");
+                
+                var a = new TagBuilder("a");
+                a.Attributes["href"] = d.Url;
+                a.Attributes["target"] = "_blank";
+                a.InnerHtml.Append("link");
+                li.InnerHtml.AppendHtml(a);
+
                 ul.InnerHtml.AppendHtml(li);
             }
 

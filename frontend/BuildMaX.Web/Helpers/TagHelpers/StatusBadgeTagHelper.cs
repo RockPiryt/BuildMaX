@@ -13,8 +13,9 @@ namespace BuildMaX.Web.Helpers.TagHelpers
             var (bg, fg) = Status switch
             {
                 AnalysisStatus.New => ("#2b2b2b", "#ffffff"),
+                AnalysisStatus.Processing => ("#0d6efd", "#ffffff"),
                 AnalysisStatus.Completed => ("#0f5132", "#ffffff"),
-                AnalysisStatus.Failed => ("#842029", "#ffffff"),
+                AnalysisStatus.Rejected => ("#842029", "#ffffff"),
                 _ => ("#2b2b2b", "#ffffff")
             };
 

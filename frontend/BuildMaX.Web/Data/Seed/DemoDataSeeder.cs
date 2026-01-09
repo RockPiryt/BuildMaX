@@ -1,6 +1,7 @@
 // (warianty, dokumenty prawne)
 using BuildMaX.Web.Models.Domain;
 using Microsoft.EntityFrameworkCore;
+using BuildMaX.Web.Models.Domain.Enums;
 
 namespace BuildMaX.Web.Data.Seed
 {
@@ -135,7 +136,7 @@ namespace BuildMaX.Web.Data.Seed
                     HardenedAreaM2 = 1000,
                     TruckParkingSpots = 10,
                     CarParkingSpots = 40,
-                    Status = AnalysisStatus.Done,
+                    Status = AnalysisStatus.Completed,
                     CreatedAt = DateTime.UtcNow.AddDays(-2)
                 },
                 new AnalysisRequest

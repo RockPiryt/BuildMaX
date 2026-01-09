@@ -38,8 +38,8 @@ namespace BuildMaX.Web.Controllers
 
             if (result.Succeeded)
             {
-                // domyślnie rola "User" (dodamy seed ról w kolejnym kroku)
-                await _users.AddToRoleAsync(user, "User");
+                // domyślnie rola Client
+                await _users.AddToRoleAsync(user, "Client");
 
                 await _signIn.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Index", "Home");

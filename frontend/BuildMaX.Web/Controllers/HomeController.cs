@@ -1,28 +1,24 @@
 using System.Diagnostics;
+using BuildMaX.Web.Data;
 using Microsoft.AspNetCore.Mvc;
 using BuildMaX.Web.Models;
 
 namespace BuildMaX.Web.Controllers;
-
 //(public: landing/pricing)
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly AppDbContext _db;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, AppDbContext db)
     {
         _logger = logger;
+        _db = db;
     }
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+    public IActionResult Index() => View();
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+    public IActionResult Privacy() => View();
 
     public IActionResult Pricing()
     {
