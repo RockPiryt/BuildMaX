@@ -17,19 +17,38 @@ namespace BuildMaX.Web.Data
         {
             base.OnModelCreating(builder);
 
-            // Variant (1) -> AnalysisRequest (N)
+            // ApplicationUser (1) -> AnalysisRequest (N)  [CASCADE]
             builder.Entity<AnalysisRequest>()
                 .HasOne(a => a.ApplicationUser)
-                .WithMany()
+                .WithMany() // opcjonalnie: .WithMany(u => u.AnalysisRequests)
                 .HasForeignKey(a => a.ApplicationUserId)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Opcjonalnie: Variant (1) -> LegalDocument (N)
+            // Variant (1) -> AnalysisRequest (N)  [RESTRICT]
+            builder.Entity<AnalysisRequest>()
+                .HasOne(a => a.Variant)
+                .WithMany(v => v.AnalysisRequests)
+                .HasForeignKey(a => a.VariantId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Variant (1) -> LegalDocument (N)  [SET NULL]  => VariantId musi być nullable w LegalDocument
             builder.Entity<LegalDocument>()
                 .HasOne(d => d.Variant)
-                .WithMany()
+                .WithMany() // opcjonalnie: .WithMany(v => v.LegalDocuments)
                 .HasForeignKey(d => d.VariantId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Dodatkowo (rekomendowane): indeksy pod typowe zapytania
+            builder.Entity<AnalysisRequest>()
+                .HasIndex(a => new { a.ApplicationUserId, a.CreatedAt });
+
+            builder.Entity<AnalysisRequest>()
+                .HasIndex(a => new { a.VariantId, a.Status });
+
+            builder.Entity<AnalysisRequest>()
+                .HasIndex(a => a.BuiltUpPercent);
         }
     }
 }
