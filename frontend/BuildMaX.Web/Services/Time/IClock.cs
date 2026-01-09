@@ -1,0 +1,1 @@
+ //(opcjonalnie pod testy / spójny czas)

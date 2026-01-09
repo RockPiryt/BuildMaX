@@ -1,0 +1,1 @@
+//  (wariant 1: raport PDF)
