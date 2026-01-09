@@ -1,0 +1,99 @@
+@model BuildMaX.Web.Controllers.AnalysisRequestsController.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="mb-0">Dashboard</h1>
+        <a class="btn btn-outline-primary" asp-controller="AnalysisRequests" asp-action="Index">Wróć do listy</a>
+    </div>
+
+    <p class="text-body-secondary">
+        Statystyki z ostatnich 30 dni (per status oraz per wariant).
+    </p>
+
+    @if (Model == null)
+    {
+        <div class="alert alert-warning">Brak danych do wyświetlenia.</div>
+    }
+    else
+    {
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <strong>Per status</strong>
+                        <span class="text-body-secondary ms-2">(od @Model.FromUtc.ToString("yyyy-MM-dd"))</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.ByStatus == null || !Model.ByStatus.Any())
+                        {
+                            <div class="text-body-secondary">Brak danych.</div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Status</th>
+                                            <th class="text-end">Liczba</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var row in Model.ByStatus)
+                                        {
+                                            <tr>
+                                                <td>@row.Label</td>
+                                                <td class="text-end">@row.Count</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <strong>Per wariant</strong>
+                        <span class="text-body-secondary ms-2">(od @Model.FromUtc.ToString("yyyy-MM-dd"))</span>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.ByVariant == null || !Model.ByVariant.Any())
+                        {
+                            <div class="text-body-secondary">Brak danych.</div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Wariant</th>
+                                            <th class="text-end">Liczba</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var row in Model.ByVariant)
+                                        {
+                                            <tr>
+                                                <td>@row.Label</td>
+                                                <td class="text-end">@row.Count</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

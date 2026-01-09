@@ -3,70 +3,86 @@
 }
 
 <div class="container py-4">
+
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-        <div class="container-fluid py-5">
+        <div class="container-fluid py-4">
             <h1 class="display-5 fw-bold">BuildMaX</h1>
-            <p class="col-md-10 fs-5">
-                BuildMaX to aplikacja stworzona dla developerów magazynowych, która analizuje wybraną działkę
-                pod kątem opłacalności zakupu wykorzystując narzędzia AI.
+            <p class="col-lg-10 fs-5">
+                Aplikacja dla developerów magazynowych, która analizuje wybraną działkę pod kątem opłacalności zakupu
+                i wylicza maksymalną możliwą powierzchnię zabudowy zgodnie z uwarunkowaniami prawnymi i standardem inwestora.
             </p>
 
-            <p class="col-md-10">
-                Aplikacja oblicza maksymalną powierzchnię zabudowy w oparciu o standard budowlany developera
-                oraz uwarunkowania przestrzenne i prawne (MPZP, WT oraz Prawo Budowlane).
-            </p>
-
-            <div class="d-flex gap-2 flex-wrap">
-                <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Pricing">Zobacz cennik</a>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Pricing">Zobacz warianty</a>
                 <a class="btn btn-outline-primary btn-lg" asp-controller="Account" asp-action="Register">Załóż konto</a>
                 <a class="btn btn-link btn-lg" asp-controller="Account" asp-action="Login">Zaloguj</a>
             </div>
+
+            <div class="row g-3 mt-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="fw-semibold">Czas</div>
+                            <div class="fs-4 fw-bold">kilkanaście minut</div>
+                            <div class="text-body-secondary">zamiast tygodni analiz ręcznych</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="fw-semibold">Próg opłacalności</div>
+                            <div class="fs-4 fw-bold">40%+</div>
+                            <div class="text-body-secondary">procent zabudowy jako kluczowa metryka</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="fw-semibold">Prawo i planowanie</div>
+                            <div class="fs-4 fw-bold">MPZP / WT</div>
+                            <div class="text-body-secondary">raport i dokumenty (zależnie od wariantu)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <div class="row align-items-md-stretch">
-        <div class="col-md-6 mb-3">
+    <div class="row g-3">
+        <div class="col-md-6">
             <div class="h-100 p-5 text-bg-dark rounded-3">
-                <h2>Dlaczego to działa?</h2>
+                <h2>Jak działa analiza</h2>
                 <p>
-                    Decyzja o zakupie działki opiera się na analizie chłonności — procent zabudowy w stosunku do całej działki.
-                    Im wyższa wartość (powyżej 40%), tym bardziej opłacalny zakup.
+                    Podajesz wielkość modułu magazynowego i adres działki. BuildMaX wylicza maksymalną zabudowę oraz wymagania:
+                    zieleń, utwardzenia, parkingi, a także sygnalizuje potencjalne obszary problemowe (np. roboty ziemne, archeologia).
                 </p>
-                <p class="mb-0">
-                    BuildMaX skraca analizę z tygodni do kilkunastu minut, automatyzując pracę na dokumentach i regułach.
+                <p class="mb-0 text-body-secondary">
+                    Wynik prezentujemy jako procent zabudowy — im wyższy, tym bardziej opłacalny zakup.
                 </p>
             </div>
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-6">
             <div class="h-100 p-5 bg-body-tertiary border rounded-3">
-                <h2>Jak wygląda proces?</h2>
-                <ol class="mb-4">
-                    <li>Podajesz wielkość modułu magazynowego oraz adres działki.</li>
-                    <li>System liczy maksymalną powierzchnię zabudowy i wymagania (zieleń, utwardzenia, parkingi).</li>
-                    <li>Dostajesz wynik, ostrzeżenia (np. archeologia, roboty ziemne) i raport (zależnie od wariantu).</li>
-                </ol>
+                <h2>Warianty</h2>
+                <ul class="mb-4">
+                    <li><strong>Wariant 1:</strong> maks. zabudowa + zieleń + raport PDF</li>
+                    <li><strong>Wariant 2:</strong> wariant 1 + szczegóły procentowe i problemy</li>
+                    <li><strong>Wariant 3:</strong> wariant 2 + plan zagospodarowania</li>
+                </ul>
 
                 <blockquote class="blockquote mb-0">
                     <p class="mb-2">
-                        „BuildMaX analizuje dla mnie dokumenty prawne i szybko kalkuluje procent zabudowy.
-                        Nie muszę już czekać kilku tygodni.”
+                        „Nie muszę już czekać na analizę terenu kilku tygodni — BuildMaX szybko kalkuluje procent zabudowy
+                        w oparciu o mój standard budowy.”
                     </p>
-                    <footer class="blockquote-footer">
-                        Ryszard Rodge, developer magazynowy
-                    </footer>
+                    <footer class="blockquote-footer">Ryszard Rodge, developer magazynowy</footer>
                 </blockquote>
             </div>
         </div>
     </div>
 
-    <div class="mt-4 p-4 border rounded-3">
-        <p class="mb-1">
-            Developer.pl, Gdańsk Polska, 01.03.2024 r. Firma Interis ogłosiła stworzenie aplikacji BuildMaX,
-            która minimalizuje czas analizowania działki pod kątem opłacalności zakupu.
-        </p>
-        <p class="mb-0">
-            Aby skorzystać z BuildMaX zarejestruj konto i wybierz wariant. Analiza zostanie wykonana w ciągu kilkunastu minut.
-        </p>
-    </div>
 </div>

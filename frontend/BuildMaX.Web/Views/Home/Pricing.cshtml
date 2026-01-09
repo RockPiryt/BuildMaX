@@ -2,61 +2,49 @@
 
 @{
     ViewData["Title"] = "Cennik";
-    var variants = Model.OrderBy(v => v.Price).ToList();
 
-    string PlanName(string name)
-    {
-        // jeśli masz nazwy "Wariant 1/2/3" – zostaw; jeśli inne, to też zadziała
-        return name;
-    }
+    var variants = (Model ?? Enumerable.Empty<BuildMaX.Web.Models.Domain.Variant>())
+        .OrderBy(v => v.Price)
+        .ToList();
 
-    string HeaderClass(BuildMaX.Web.Models.Domain.Variant v)
-    {
-        // wyróżnij najdroższy jako "primary"
-        var max = variants.Max(x => x.Price);
-        return v.Price == max ? "text-bg-primary border-primary" : "";
-    }
+    var maxPrice = variants.Count > 0 ? variants.Max(v => v.Price) : 0m;
 
     string CardBorder(BuildMaX.Web.Models.Domain.Variant v)
-    {
-        var max = variants.Max(x => x.Price);
-        return v.Price == max ? "border-primary" : "";
-    }
+        => v.Price == maxPrice ? "border-primary" : "";
+
+    string HeaderClass(BuildMaX.Web.Models.Domain.Variant v)
+        => v.Price == maxPrice ? "text-bg-primary border-primary" : "";
 
     string ButtonClass(BuildMaX.Web.Models.Domain.Variant v)
-    {
-        var max = variants.Max(x => x.Price);
-        return v.Price == max ? "btn btn-lg btn-primary w-100" : "btn btn-lg btn-outline-primary w-100";
-    }
+        => v.Price == maxPrice ? "btn btn-lg btn-primary w-100" : "btn btn-lg btn-outline-primary w-100";
 }
 
-<div class="container py-3">
-    <header class="pb-3 mb-4 border-bottom">
-        <div class="d-flex flex-column flex-md-row align-items-center">
-            <span class="fs-4">Cennik BuildMaX</span>
-            <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-                <a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Home" asp-action="Index">Home</a>
-                <a class="py-2 link-body-emphasis text-decoration-none" asp-controller="Home" asp-action="Pricing">Cennik</a>
-            </nav>
-        </div>
-    </header>
+<div class="container py-4">
 
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-        <h1 class="display-4 fw-normal">Warianty</h1>
+        <h1 class="display-4 fw-normal">Cennik</h1>
         <p class="fs-5 text-body-secondary">
-            Wybierz zakres analizy działki: od szybkiej kalkulacji chłonności po pełny plan zagospodarowania.
+            Wybierz wariant dopasowany do szybkości decyzji i poziomu szczegółowości analizy.
         </p>
     </div>
 
-    <main>
-        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+    @if (variants.Count == 0)
+    {
+        <div class="alert alert-warning">
+            Brak wariantów w bazie. Dodaj warianty jako Admin w panelu lub przez seeding.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-3 mb-4 text-center">
             @foreach (var v in variants)
             {
                 <div class="col">
                     <div class="card mb-4 rounded-3 shadow-sm @CardBorder(v)">
                         <div class="card-header py-3 @HeaderClass(v)">
-                            <h4 class="my-0 fw-normal">@PlanName(v.Name)</h4>
+                            <h4 class="my-0 fw-normal">@v.Name</h4>
                         </div>
+
                         <div class="card-body">
                             <h1 class="card-title pricing-card-title">
                                 @v.Price.ToString("0.00") PLN
@@ -64,20 +52,10 @@
                             </h1>
 
                             <ul class="list-unstyled mt-3 mb-4 text-start">
-                                @if (v.IncludesPdf)
-                                {
-                                    <li>Raport PDF z podstawami prawnymi</li>
-                                }
-                                @if (v.IncludesPercentDetails)
-                                {
-                                    <li>Szczegóły procentowe: zabudowa / zieleń / utwardzenia</li>
-                                    <li>Parking: TIR i osobowe</li>
-                                    <li>Wykrywanie obszarów problemowych</li>
-                                }
-                                @if (v.IncludesSitePlan)
-                                {
-                                    <li>Plan zagospodarowania działki (site plan)</li>
-                                }
+                                <li>@(v.IncludesPdf ? "✓" : "—") Raport PDF + dokumenty prawne</li>
+                                <li>@(v.IncludesPercentDetails ? "✓" : "—") Szczegółowe dane procentowe</li>
+                                <li>@(v.IncludesSitePlan ? "✓" : "—") Plan zagospodarowania</li>
+
                                 @if (!string.IsNullOrWhiteSpace(v.Description))
                                 {
                                     <li class="mt-2 text-body-secondary">@v.Description</li>
@@ -85,7 +63,7 @@
                             </ul>
 
                             <a class="@ButtonClass(v)" asp-controller="Account" asp-action="Register">
-                                Wybierz i załóż konto
+                                Wybierz wariant
                             </a>
                         </div>
                     </div>
@@ -93,9 +71,9 @@
             }
         </div>
 
-        <h2 class="display-6 text-center mb-4">Porównanie funkcji</h2>
+        <h2 class="display-6 text-center mb-3">Porównanie</h2>
         <div class="table-responsive">
-            <table class="table text-center">
+            <table class="table text-center align-middle">
                 <thead>
                     <tr>
                         <th style="width: 34%;"></th>
@@ -130,5 +108,6 @@
                 </tbody>
             </table>
         </div>
-    </main>
+    }
+
 </div>

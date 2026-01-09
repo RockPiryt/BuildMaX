@@ -2,13 +2,11 @@ using System.Security.Claims;
 using BuildMaX.Web.Data;
 using BuildMaX.Web.Models.Domain;
 using BuildMaX.Web.Models.Domain.Enums;
-using BuildMaX.Web.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-//(CRUD zleceń; role + LINQ)
 namespace BuildMaX.Web.Controllers
 {
     [Authorize]
@@ -21,9 +19,7 @@ namespace BuildMaX.Web.Controllers
             _db = db;
         }
 
-        // GET: AnalysisRequests
-        // Client: widzi swoje; Admin/Analyst: widzą wszystkie
-        // LINQ: filtr po statusie + sort po CreatedAt + include Variant
+        // LISTA: User widzi swoje; Admin/Analyst widzą wszystko
         public async Task<IActionResult> Index(AnalysisStatus? status, string? q)
         {
             var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
@@ -54,7 +50,7 @@ namespace BuildMaX.Web.Controllers
             return View(data);
         }
 
-        // GET: AnalysisRequests/Details/5
+        // SZCZEGÓŁY: User tylko swoje
         public async Task<IActionResult> Details(int? id)
         {
             if (id is null) return NotFound();
@@ -66,26 +62,23 @@ namespace BuildMaX.Web.Controllers
                 .FirstOrDefaultAsync(a => a.AnalysisRequestId == id.Value);
 
             if (ar is null) return NotFound();
-
-            // Client nie może podejrzeć cudzych
-            if (!CanAccessAnalysis(ar))
-                return Forbid();
+            if (!CanAccess(ar)) return Forbid();
 
             return View(ar);
         }
 
-        // GET: AnalysisRequests/Create
-        [Authorize(Roles = "Client,Admin")] // Admin też może złożyć "testowe" zlecenie
+        // CREATE: zwykły User + Admin (u Ciebie rola "User" jest seedowana)
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Create()
         {
             await PopulateVariantsSelectListAsync();
             return View();
         }
 
-        // POST: AnalysisRequests/Create
+        // CREATE POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Client,Admin")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Create([Bind("VariantId,Address,PlotAreaM2,ModuleAreaM2")] AnalysisRequest ar)
         {
             if (!ModelState.IsValid)
@@ -98,18 +91,13 @@ namespace BuildMaX.Web.Controllers
             ar.Status = AnalysisStatus.New;
             ar.CreatedAt = DateTime.UtcNow;
 
-            // Tu możesz później podpiąć "AnalysisCalculator" i uzupełniać wyniki
-            // ar.BuiltUpPercent = ...
-            // ar.GreenAreaM2 = ...
-
             _db.AnalysisRequests.Add(ar);
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: AnalysisRequests/Edit/5
-        // Admin: pełna edycja; Analyst: tylko status (możesz też rozdzielić na EditStatus)
+        // EDIT GET: Admin/Analyst
         [Authorize(Roles = "Admin,Analyst")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -125,8 +113,9 @@ namespace BuildMaX.Web.Controllers
             return View(ar);
         }
 
-        // POST: AnalysisRequests/Edit/5
-        // Admin może edytować całość; Analyst tylko status i pola wynikowe/ryzyka (opcjonalnie)
+        // EDIT POST:
+        // - Analyst: tylko status + pola wynikowe/ryzyka
+        // - Admin: pełna edycja
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Analyst")]
@@ -137,9 +126,11 @@ namespace BuildMaX.Web.Controllers
             var ar = await _db.AnalysisRequests.FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
             if (ar is null) return NotFound();
 
-            if (User.IsInRole("Analyst") && !User.IsInRole("Admin"))
+            var isAnalystOnly = User.IsInRole("Analyst") && !User.IsInRole("Admin");
+
+            if (isAnalystOnly)
             {
-                // Analyst: aktualizuje tylko status i ewentualnie wyniki/ryzyka
+                // Analyst: tylko "workflow"
                 ar.Status = input.Status;
                 ar.BuiltUpPercent = input.BuiltUpPercent;
                 ar.GreenAreaM2 = input.GreenAreaM2;
@@ -149,38 +140,36 @@ namespace BuildMaX.Web.Controllers
                 ar.HasArchaeologyRisk = input.HasArchaeologyRisk;
                 ar.HasEarthworksRisk = input.HasEarthworksRisk;
 
-                // Nie dotykamy: VariantId, Address, PlotAreaM2, ModuleAreaM2, ApplicationUserId, CreatedAt
-                ModelState.Clear(); // walidacja inputu niepotrzebna dla pól, których nie zapisujemy
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(Details), new { id });
             }
-            else
+
+            // Admin: walidujemy normalnie
+            if (!ModelState.IsValid)
             {
-                // Admin: pełna edycja
-                if (!ModelState.IsValid)
-                {
-                    await PopulateVariantsSelectListAsync(input.VariantId);
-                    return View(input);
-                }
-
-                ar.VariantId = input.VariantId;
-                ar.Address = input.Address;
-                ar.PlotAreaM2 = input.PlotAreaM2;
-                ar.ModuleAreaM2 = input.ModuleAreaM2;
-
-                ar.Status = input.Status;
-                ar.BuiltUpPercent = input.BuiltUpPercent;
-                ar.GreenAreaM2 = input.GreenAreaM2;
-                ar.HardenedAreaM2 = input.HardenedAreaM2;
-                ar.TruckParkingSpots = input.TruckParkingSpots;
-                ar.CarParkingSpots = input.CarParkingSpots;
-                ar.HasArchaeologyRisk = input.HasArchaeologyRisk;
-                ar.HasEarthworksRisk = input.HasEarthworksRisk;
+                await PopulateVariantsSelectListAsync(input.VariantId);
+                return View(input);
             }
+
+            ar.VariantId = input.VariantId;
+            ar.Address = input.Address;
+            ar.PlotAreaM2 = input.PlotAreaM2;
+            ar.ModuleAreaM2 = input.ModuleAreaM2;
+
+            ar.Status = input.Status;
+            ar.BuiltUpPercent = input.BuiltUpPercent;
+            ar.GreenAreaM2 = input.GreenAreaM2;
+            ar.HardenedAreaM2 = input.HardenedAreaM2;
+            ar.TruckParkingSpots = input.TruckParkingSpots;
+            ar.CarParkingSpots = input.CarParkingSpots;
+            ar.HasArchaeologyRisk = input.HasArchaeologyRisk;
+            ar.HasEarthworksRisk = input.HasEarthworksRisk;
 
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        // GET: AnalysisRequests/Delete/5
+        // DELETE GET: Admin
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -197,7 +186,7 @@ namespace BuildMaX.Web.Controllers
             return View(ar);
         }
 
-        // POST: AnalysisRequests/Delete/5
+        // DELETE POST: Admin
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -212,18 +201,16 @@ namespace BuildMaX.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Własne LINQ: ranking opłacalności (top N analiz z BuiltUpPercent >= 40)
+        // RANKING: top analiz z BuiltUpPercent >= 40
         [Authorize(Roles = "Admin,Analyst")]
         public async Task<IActionResult> ProfitabilityRanking(int top = 10)
         {
-            if (top < 1) top = 10;
-            if (top > 100) top = 100;
+            top = Math.Clamp(top, 1, 100);
 
             var data = await _db.AnalysisRequests
                 .AsNoTracking()
                 .Include(a => a.Variant)
-                .Include(a => a.ApplicationUser)
-                .Where(a => a.BuiltUpPercent >= 40)
+                .Where(a => a.BuiltUpPercent != null && a.BuiltUpPercent >= 40)
                 .OrderByDescending(a => a.BuiltUpPercent)
                 .ThenByDescending(a => a.CreatedAt)
                 .Take(top)
@@ -232,28 +219,50 @@ namespace BuildMaX.Web.Controllers
             return View(data);
         }
 
-        // Własne LINQ: dashboard (ilość analiz per status w ostatnich 30 dniach)
+        // DASHBOARD: ostatnie 30 dni (per status i per wariant)
         [Authorize(Roles = "Admin,Analyst")]
         public async Task<IActionResult> Dashboard()
         {
             var from = DateTime.UtcNow.AddDays(-30);
 
-            var data = await _db.AnalysisRequests
+            var byStatus = await _db.AnalysisRequests
                 .AsNoTracking()
                 .Where(a => a.CreatedAt >= from)
                 .GroupBy(a => a.Status)
-                .Select(g => new
+                .Select(g => new DashboardRow
                 {
-                    Status = g.Key,
+                    Label = g.Key.ToString(),
                     Count = g.Count()
                 })
                 .OrderByDescending(x => x.Count)
                 .ToListAsync();
 
-            return View(data);
+            var byVariant = await _db.AnalysisRequests
+                .AsNoTracking()
+                .Where(a => a.CreatedAt >= from)
+                .Include(a => a.Variant)
+                .GroupBy(a => a.Variant.Name)
+                .Select(g => new DashboardRow
+                {
+                    Label = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .ToListAsync();
+
+            var vm = new DashboardViewModel
+            {
+                FromUtc = from,
+                ByStatus = byStatus,
+                ByVariant = byVariant
+            };
+
+            return View(vm);
         }
 
-        private bool CanAccessAnalysis(AnalysisRequest ar)
+        // ---- helpers ----
+
+        private bool CanAccess(AnalysisRequest ar)
         {
             if (User.IsInRole("Admin") || User.IsInRole("Analyst"))
                 return true;
@@ -268,9 +277,24 @@ namespace BuildMaX.Web.Controllers
                 .AsNoTracking()
                 .OrderBy(v => v.Price)
                 .ThenBy(v => v.Name)
+                .Select(v => new { v.VariantId, v.Name })
                 .ToListAsync();
 
             ViewData["VariantId"] = new SelectList(variants, "VariantId", "Name", selectedVariantId);
+        }
+
+        // proste VM do dashboardu
+        public class DashboardViewModel
+        {
+            public DateTime FromUtc { get; set; }
+            public List<DashboardRow> ByStatus { get; set; } = new();
+            public List<DashboardRow> ByVariant { get; set; } = new();
+        }
+
+        public class DashboardRow
+        {
+            public string Label { get; set; } = "";
+            public int Count { get; set; }
         }
     }
 }
