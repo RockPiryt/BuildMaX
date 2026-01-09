@@ -23,6 +23,12 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Pricing()
+    {
+        var variants = _db.Variants.ToList();
+        return View(variants);
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
