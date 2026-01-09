@@ -1,0 +1,31 @@
+@model IEnumerable<BuildMaX.Web.Models.ViewModels.TopProfitableVariantVm>
+
+@{
+    ViewData["Title"] = "Top profitable (>= 40%)";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    Ranking wariantów wg liczby analiz z BuiltUpPercent >= 40.
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Wariant</th>
+            <th class="text-end">Liczba analiz</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Variant</td>
+            <td class="text-end">@item.Count</td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Wróć</a>

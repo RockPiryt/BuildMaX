@@ -1,0 +1,32 @@
+@model BuildMaX.Web.Models.Domain.Variant
+
+@{
+    ViewData["Title"] = "Usuń wariant";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="alert alert-warning">
+    Czy na pewno chcesz usunąć ten wariant? Tej operacji nie da się cofnąć.
+</div>
+
+<div>
+    <h4>Wariant</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Name)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Price)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Price)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Description)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Description)</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="VariantId" />
+        <button type="submit" class="btn btn-danger">Usuń</button>
+        <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+    </form>
+</div>
