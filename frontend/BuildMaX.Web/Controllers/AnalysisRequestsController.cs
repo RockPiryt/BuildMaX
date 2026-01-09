@@ -1,8 +1,11 @@
+using System.Security.Claims;
 using BuildMaX.Web.Data;
 using BuildMaX.Web.Models.Domain;
+using BuildMaX.Web.Models.Domain.Enums;
+using BuildMaX.Web.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 //(CRUD zleceń; role + LINQ)
@@ -12,192 +15,262 @@ namespace BuildMaX.Web.Controllers
     public class AnalysisRequestsController : Controller
     {
         private readonly AppDbContext _db;
-        private readonly UserManager<BuildMaX.Web.Models.Identity.ApplicationUser> _users;
 
-        public AnalysisRequestsController(AppDbContext db, UserManager<BuildMaX.Web.Models.Identity.ApplicationUser> users)
+        public AnalysisRequestsController(AppDbContext db)
         {
             _db = db;
-            _users = users;
         }
 
-        private async Task<string> CurrentUserIdAsync()
+        // GET: AnalysisRequests
+        // Client: widzi swoje; Admin/Analyst: widzą wszystkie
+        // LINQ: filtr po statusie + sort po CreatedAt + include Variant
+        public async Task<IActionResult> Index(AnalysisStatus? status, string? q)
         {
-            var user = await _users.GetUserAsync(User);
-            return user!.Id;
-        }
-
-        private bool IsAdmin() => User.IsInRole("Admin");
-
-        // GET: /AnalysisRequests
-        public async Task<IActionResult> Index()
-        {
-            var uid = await CurrentUserIdAsync();
+            var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var query = _db.AnalysisRequests
+                .AsNoTracking()
                 .Include(a => a.Variant)
+                .Include(a => a.ApplicationUser)
                 .AsQueryable();
 
-            if (!IsAdmin())
-                query = query.Where(a => a.ApplicationUserId == uid);
+            if (!isAdminOrAnalyst)
+                query = query.Where(a => a.ApplicationUserId == userId);
 
-            var items = await query
+            if (status.HasValue)
+                query = query.Where(a => a.Status == status.Value);
+
+            if (!string.IsNullOrWhiteSpace(q))
+                query = query.Where(a => a.Address.Contains(q));
+
+            var data = await query
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
-            return View(items);
+            ViewData["SelectedStatus"] = status;
+            ViewData["Query"] = q;
+
+            return View(data);
         }
 
-        // GET: /AnalysisRequests/Details/5
+        // GET: AnalysisRequests/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id is null) return NotFound();
 
-            var uid = await CurrentUserIdAsync();
-
-            var query = _db.AnalysisRequests
+            var ar = await _db.AnalysisRequests
+                .AsNoTracking()
                 .Include(a => a.Variant)
-                .AsQueryable();
+                .Include(a => a.ApplicationUser)
+                .FirstOrDefaultAsync(a => a.AnalysisRequestId == id.Value);
 
-            if (!IsAdmin())
-                query = query.Where(a => a.ApplicationUserId == uid);
+            if (ar is null) return NotFound();
 
-            var item = await query.FirstOrDefaultAsync(m => m.AnalysisRequestId == id);
-            if (item == null) return NotFound();
+            // Client nie może podejrzeć cudzych
+            if (!CanAccessAnalysis(ar))
+                return Forbid();
 
-            return View(item);
+            return View(ar);
         }
 
-        // GET: /AnalysisRequests/Create
+        // GET: AnalysisRequests/Create
+        [Authorize(Roles = "Client,Admin")] // Admin też może złożyć "testowe" zlecenie
         public async Task<IActionResult> Create()
         {
-            ViewBag.Variants = await _db.Variants
-                .OrderBy(v => v.Name)
-                .ToListAsync();
-
+            await PopulateVariantsSelectListAsync();
             return View();
         }
 
-        // POST: /AnalysisRequests/Create
+        // POST: AnalysisRequests/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AnalysisRequest model)
+        [Authorize(Roles = "Client,Admin")]
+        public async Task<IActionResult> Create([Bind("VariantId,Address,PlotAreaM2,ModuleAreaM2")] AnalysisRequest ar)
         {
-            // użytkownik nie powinien wysyłać ApplicationUserId z formularza
-            model.ApplicationUserId = await CurrentUserIdAsync();
-            model.CreatedAt = DateTime.UtcNow;
-
             if (!ModelState.IsValid)
             {
-                ViewBag.Variants = await _db.Variants.OrderBy(v => v.Name).ToListAsync();
-                return View(model);
+                await PopulateVariantsSelectListAsync(ar.VariantId);
+                return View(ar);
             }
 
-            _db.AnalysisRequests.Add(model);
+            ar.ApplicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            ar.Status = AnalysisStatus.New;
+            ar.CreatedAt = DateTime.UtcNow;
+
+            // Tu możesz później podpiąć "AnalysisCalculator" i uzupełniać wyniki
+            // ar.BuiltUpPercent = ...
+            // ar.GreenAreaM2 = ...
+
+            _db.AnalysisRequests.Add(ar);
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /AnalysisRequests/Edit/5
+        // GET: AnalysisRequests/Edit/5
+        // Admin: pełna edycja; Analyst: tylko status (możesz też rozdzielić na EditStatus)
+        [Authorize(Roles = "Admin,Analyst")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id is null) return NotFound();
 
-            var uid = await CurrentUserIdAsync();
+            var ar = await _db.AnalysisRequests
+                .Include(a => a.Variant)
+                .FirstOrDefaultAsync(a => a.AnalysisRequestId == id.Value);
 
-            var query = _db.AnalysisRequests.AsQueryable();
-            if (!IsAdmin())
-                query = query.Where(a => a.ApplicationUserId == uid);
+            if (ar is null) return NotFound();
 
-            var item = await query.FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
-            if (item == null) return NotFound();
-
-            ViewBag.Variants = await _db.Variants.OrderBy(v => v.Name).ToListAsync();
-            return View(item);
+            await PopulateVariantsSelectListAsync(ar.VariantId);
+            return View(ar);
         }
 
-        // POST: /AnalysisRequests/Edit/5
+        // POST: AnalysisRequests/Edit/5
+        // Admin może edytować całość; Analyst tylko status i pola wynikowe/ryzyka (opcjonalnie)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, AnalysisRequest model)
+        [Authorize(Roles = "Admin,Analyst")]
+        public async Task<IActionResult> Edit(int id, AnalysisRequest input)
         {
-            if (id != model.AnalysisRequestId) return NotFound();
+            if (id != input.AnalysisRequestId) return NotFound();
 
-            var uid = await CurrentUserIdAsync();
+            var ar = await _db.AnalysisRequests.FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
+            if (ar is null) return NotFound();
 
-            var existing = await _db.AnalysisRequests.FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
-            if (existing == null) return NotFound();
-
-            if (!IsAdmin() && existing.ApplicationUserId != uid) return Forbid();
-
-            // zabezpieczenie: user nie zmienia właściciela
-            model.ApplicationUserId = existing.ApplicationUserId;
-
-            if (!ModelState.IsValid)
+            if (User.IsInRole("Analyst") && !User.IsInRole("Admin"))
             {
-                ViewBag.Variants = await _db.Variants.OrderBy(v => v.Name).ToListAsync();
-                return View(model);
+                // Analyst: aktualizuje tylko status i ewentualnie wyniki/ryzyka
+                ar.Status = input.Status;
+                ar.BuiltUpPercent = input.BuiltUpPercent;
+                ar.GreenAreaM2 = input.GreenAreaM2;
+                ar.HardenedAreaM2 = input.HardenedAreaM2;
+                ar.TruckParkingSpots = input.TruckParkingSpots;
+                ar.CarParkingSpots = input.CarParkingSpots;
+                ar.HasArchaeologyRisk = input.HasArchaeologyRisk;
+                ar.HasEarthworksRisk = input.HasEarthworksRisk;
+
+                // Nie dotykamy: VariantId, Address, PlotAreaM2, ModuleAreaM2, ApplicationUserId, CreatedAt
+                ModelState.Clear(); // walidacja inputu niepotrzebna dla pól, których nie zapisujemy
+            }
+            else
+            {
+                // Admin: pełna edycja
+                if (!ModelState.IsValid)
+                {
+                    await PopulateVariantsSelectListAsync(input.VariantId);
+                    return View(input);
+                }
+
+                ar.VariantId = input.VariantId;
+                ar.Address = input.Address;
+                ar.PlotAreaM2 = input.PlotAreaM2;
+                ar.ModuleAreaM2 = input.ModuleAreaM2;
+
+                ar.Status = input.Status;
+                ar.BuiltUpPercent = input.BuiltUpPercent;
+                ar.GreenAreaM2 = input.GreenAreaM2;
+                ar.HardenedAreaM2 = input.HardenedAreaM2;
+                ar.TruckParkingSpots = input.TruckParkingSpots;
+                ar.CarParkingSpots = input.CarParkingSpots;
+                ar.HasArchaeologyRisk = input.HasArchaeologyRisk;
+                ar.HasEarthworksRisk = input.HasEarthworksRisk;
             }
 
-            // mapowanie pól (żeby nie nadpisać pól systemowych)
-            existing.VariantId = model.VariantId;
-            existing.Address = model.Address;
-            existing.PlotAreaM2 = model.PlotAreaM2;
-            existing.ModuleAreaM2 = model.ModuleAreaM2;
-
-            existing.BuiltUpPercent = model.BuiltUpPercent;
-            existing.GreenAreaM2 = model.GreenAreaM2;
-            existing.HardenedAreaM2 = model.HardenedAreaM2;
-
-            existing.TruckParkingSpots = model.TruckParkingSpots;
-            existing.CarParkingSpots = model.CarParkingSpots;
-
-            existing.HasArchaeologyRisk = model.HasArchaeologyRisk;
-            existing.HasEarthworksRisk = model.HasEarthworksRisk;
-
-            // status tylko admin? jeśli chcesz:
-            if (IsAdmin())
-                existing.Status = model.Status;
-
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id });
         }
 
-        // GET: /AnalysisRequests/Delete/5
+        // GET: AnalysisRequests/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id is null) return NotFound();
 
-            var uid = await CurrentUserIdAsync();
-
-            var query = _db.AnalysisRequests
+            var ar = await _db.AnalysisRequests
+                .AsNoTracking()
                 .Include(a => a.Variant)
-                .AsQueryable();
+                .Include(a => a.ApplicationUser)
+                .FirstOrDefaultAsync(a => a.AnalysisRequestId == id.Value);
 
-            if (!IsAdmin())
-                query = query.Where(a => a.ApplicationUserId == uid);
+            if (ar is null) return NotFound();
 
-            var item = await query.FirstOrDefaultAsync(m => m.AnalysisRequestId == id);
-            if (item == null) return NotFound();
-
-            return View(item);
+            return View(ar);
         }
 
-        // POST: /AnalysisRequests/Delete/5
+        // POST: AnalysisRequests/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var uid = await CurrentUserIdAsync();
+            var ar = await _db.AnalysisRequests.FindAsync(id);
+            if (ar is null) return RedirectToAction(nameof(Index));
 
-            var item = await _db.AnalysisRequests.FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
-            if (item == null) return NotFound();
-
-            if (!IsAdmin() && item.ApplicationUserId != uid) return Forbid();
-
-            _db.AnalysisRequests.Remove(item);
+            _db.AnalysisRequests.Remove(ar);
             await _db.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
+        }
+
+        // Własne LINQ: ranking opłacalności (top N analiz z BuiltUpPercent >= 40)
+        [Authorize(Roles = "Admin,Analyst")]
+        public async Task<IActionResult> ProfitabilityRanking(int top = 10)
+        {
+            if (top < 1) top = 10;
+            if (top > 100) top = 100;
+
+            var data = await _db.AnalysisRequests
+                .AsNoTracking()
+                .Include(a => a.Variant)
+                .Include(a => a.ApplicationUser)
+                .Where(a => a.BuiltUpPercent >= 40)
+                .OrderByDescending(a => a.BuiltUpPercent)
+                .ThenByDescending(a => a.CreatedAt)
+                .Take(top)
+                .ToListAsync();
+
+            return View(data);
+        }
+
+        // Własne LINQ: dashboard (ilość analiz per status w ostatnich 30 dniach)
+        [Authorize(Roles = "Admin,Analyst")]
+        public async Task<IActionResult> Dashboard()
+        {
+            var from = DateTime.UtcNow.AddDays(-30);
+
+            var data = await _db.AnalysisRequests
+                .AsNoTracking()
+                .Where(a => a.CreatedAt >= from)
+                .GroupBy(a => a.Status)
+                .Select(g => new
+                {
+                    Status = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .ToListAsync();
+
+            return View(data);
+        }
+
+        private bool CanAccessAnalysis(AnalysisRequest ar)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("Analyst"))
+                return true;
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return ar.ApplicationUserId == userId;
+        }
+
+        private async Task PopulateVariantsSelectListAsync(int? selectedVariantId = null)
+        {
+            var variants = await _db.Variants
+                .AsNoTracking()
+                .OrderBy(v => v.Price)
+                .ThenBy(v => v.Name)
+                .ToListAsync();
+
+            ViewData["VariantId"] = new SelectList(variants, "VariantId", "Name", selectedVariantId);
         }
     }
 }

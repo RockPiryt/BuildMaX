@@ -11,9 +11,9 @@ namespace BuildMaX.Web.Controllers
     [Authorize(Roles = "Admin")]
     public class VariantsController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly AppDbContext _db;
 
-        public VariantsController(ApplicationDbContext db)
+        public VariantsController(AppDbContext db)
         {
             _db = db;
         }
@@ -36,7 +36,7 @@ namespace BuildMaX.Web.Controllers
 
             var variant = await _db.Variants
                 .AsNoTracking()
-                .FirstOrDefaultAsync(v => v.VariantId == id);
+                .FirstOrDefaultAsync(v => v.VariantId == id.Value);
 
             if (variant is null) return NotFound();
 
@@ -44,18 +44,14 @@ namespace BuildMaX.Web.Controllers
         }
 
         // GET: Variants/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // POST: Variants/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Price,Description,IncludesPdf,IncludesPercentDetails,IncludesSitePlan")] Variant variant)
         {
-            if (!ModelState.IsValid)
-                return View(variant);
+            if (!ModelState.IsValid) return View(variant);
 
             _db.Variants.Add(variant);
             await _db.SaveChangesAsync();
@@ -68,7 +64,7 @@ namespace BuildMaX.Web.Controllers
         {
             if (id is null) return NotFound();
 
-            var variant = await _db.Variants.FindAsync(id);
+            var variant = await _db.Variants.FindAsync(id.Value);
             if (variant is null) return NotFound();
 
             return View(variant);
@@ -80,9 +76,7 @@ namespace BuildMaX.Web.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("VariantId,Name,Price,Description,IncludesPdf,IncludesPercentDetails,IncludesSitePlan")] Variant variant)
         {
             if (id != variant.VariantId) return NotFound();
-
-            if (!ModelState.IsValid)
-                return View(variant);
+            if (!ModelState.IsValid) return View(variant);
 
             try
             {
@@ -106,7 +100,7 @@ namespace BuildMaX.Web.Controllers
 
             var variant = await _db.Variants
                 .AsNoTracking()
-                .FirstOrDefaultAsync(v => v.VariantId == id);
+                .FirstOrDefaultAsync(v => v.VariantId == id.Value);
 
             if (variant is null) return NotFound();
 
@@ -121,15 +115,15 @@ namespace BuildMaX.Web.Controllers
             var variant = await _db.Variants.FindAsync(id);
             if (variant is null) return RedirectToAction(nameof(Index));
 
-            // Restrict: jeśli są AnalysisRequests, usuwanie ma być blokowane.
-            // Ponieważ to często kończy się wyjątkiem FK w bazie, robimy ładny komunikat wcześniej:
+            // RESTRICT: blokuj jeśli są AnalysisRequests
             var hasRequests = await _db.AnalysisRequests
                 .AsNoTracking()
                 .AnyAsync(a => a.VariantId == id);
 
             if (hasRequests)
             {
-                ModelState.AddModelError(string.Empty, "Nie można usunąć wariantu, ponieważ istnieją powiązane zlecenia analizy (AnalysisRequests).");
+                ModelState.AddModelError(string.Empty,
+                    "Nie można usunąć wariantu, ponieważ istnieją powiązane zlecenia analizy (AnalysisRequests).");
                 return View("Delete", variant);
             }
 
@@ -139,7 +133,7 @@ namespace BuildMaX.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Variants/TopProfitable
+        // Własne LINQ: ranking wariantów wg ilości analiz opłacalnych (>= 40%)
         public async Task<IActionResult> TopProfitable()
         {
             var data = await _db.AnalysisRequests
