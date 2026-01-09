@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Razor.TagHelpers;
 using BuildMaX.Web.Models.Domain.Enums;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace BuildMaX.Web.Helpers.TagHelpers
 {
@@ -10,16 +10,19 @@ namespace BuildMaX.Web.Helpers.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var color = Status switch
+            var (bg, fg) = Status switch
             {
-                AnalysisStatus.New => "#888",
-                AnalysisStatus.Completed => "green",
-                AnalysisStatus.Failed => "red",
-                _ => "#444"
+                AnalysisStatus.New => ("#2b2b2b", "#ffffff"),
+                AnalysisStatus.Completed => ("#0f5132", "#ffffff"),
+                AnalysisStatus.Failed => ("#842029", "#ffffff"),
+                _ => ("#2b2b2b", "#ffffff")
             };
 
             output.TagName = "span";
-            output.Attributes.SetAttribute("style", $"color:{color}; font-weight:bold;");
+            output.Attributes.SetAttribute(
+                "style",
+                $"display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;background:{bg};color:{fg};"
+            );
             output.Content.SetContent(Status.ToString());
         }
     }

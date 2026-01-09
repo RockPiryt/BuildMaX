@@ -1,26 +1,23 @@
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using BuildMaX.Web.Models.Domain.Enums;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using BuildMaX.Web.Models.Domain;
 
-namespace BuildMaX.Web.Helpers.TagHelpers
+namespace BuildMaX.Web.Helpers.HtmlHelpers
 {
-    [HtmlTargetElement("status-badge")]
-    public class StatusBadgeTagHelper : TagHelper
+    public static class LegalDocsHtmlHelpers
     {
-        public AnalysisStatus Status { get; set; }
-
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public static IHtmlContent RenderLegalDocs(this IHtmlHelper html, IEnumerable<LegalDocument> docs)
         {
-            var color = Status switch
-            {
-                AnalysisStatus.New => "#888",
-                AnalysisStatus.Completed => "green",
-                AnalysisStatus.Failed => "red",
-                _ => "#444"
-            };
+            var ul = new TagBuilder("ul");
 
-            output.TagName = "span";
-            output.Attributes.SetAttribute("style", $"color:{color}; font-weight:bold;");
-            output.Content.SetContent(Status.ToString());
+            foreach (var d in docs)
+            {
+                var li = new TagBuilder("li");
+                li.InnerHtml.Append($"{d.Title} ({d.DocumentType})");
+                ul.InnerHtml.AppendHtml(li);
+            }
+
+            return ul;
         }
     }
 }
