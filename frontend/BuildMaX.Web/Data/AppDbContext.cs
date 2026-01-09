@@ -19,10 +19,10 @@ namespace BuildMaX.Web.Data
 
             // Variant (1) -> AnalysisRequest (N)
             builder.Entity<AnalysisRequest>()
-                .HasOne(a => a.Variant)
-                .WithMany(v => v.AnalysisRequests)
-                .HasForeignKey(a => a.VariantId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(a => a.ApplicationUser)
+                .WithMany()
+                .HasForeignKey(a => a.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Opcjonalnie: Variant (1) -> LegalDocument (N)
             builder.Entity<LegalDocument>()

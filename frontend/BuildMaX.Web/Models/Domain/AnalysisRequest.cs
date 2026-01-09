@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using BuildMaX.Web.Models.Domain.Enums;
+using BuildMaX.Web.Models.Identity;
 
 namespace BuildMaX.Web.Models.Domain
 {
@@ -9,8 +9,11 @@ namespace BuildMaX.Web.Models.Domain
     {
         public int AnalysisRequestId { get; set; }
 
+        // Owner (ASP.NET Identity user)
         [Required]
         public string ApplicationUserId { get; set; } = string.Empty;
+
+        public ApplicationUser? ApplicationUser { get; set; }
 
         [Required]
         [Display(Name = "Wariant")]
@@ -31,8 +34,8 @@ namespace BuildMaX.Web.Models.Domain
         [Display(Name = "Powierzchnia modułu (m²)")]
         public decimal ModuleAreaM2 { get; set; }
 
-        [Display(Name = "Procent zabudowy")]
         [Range(0, 100)]
+        [Display(Name = "Procent zabudowy")]
         public decimal? BuiltUpPercent { get; set; }
 
         [Display(Name = "Powierzchnia zielona (m²)")]
