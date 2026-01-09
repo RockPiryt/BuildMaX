@@ -17,15 +17,16 @@ namespace BuildMaX.Web.Data
         {
             base.OnModelCreating(builder);
 
-            // ApplicationUser (1) -> AnalysisRequest (N)  [CASCADE]
+            // ApplicationUser (1) -> AnalysisRequest (N) [CASCADE]
             builder.Entity<AnalysisRequest>()
                 .HasOne(a => a.ApplicationUser)
-                .WithMany() // opcjonalnie: .WithMany(u => u.AnalysisRequests)
+                .WithMany(u => u.AnalysisRequests)
                 .HasForeignKey(a => a.ApplicationUserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Variant (1) -> AnalysisRequest (N)  [RESTRICT]
+            // Variant (1) -> AnalysisRequest (N) [RESTRICT]
+            // Usunięcie wariantu blokowane, jeśli istnieją zlecenia
             builder.Entity<AnalysisRequest>()
                 .HasOne(a => a.Variant)
                 .WithMany(v => v.AnalysisRequests)
@@ -33,14 +34,15 @@ namespace BuildMaX.Web.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Variant (1) -> LegalDocument (N)  [SET NULL]  => VariantId musi być nullable w LegalDocument
+            // Variant (1) -> LegalDocument (N) [SET NULL]
+            // Dokumenty prawne pozostają, a VariantId staje się NULL po usunięciu wariantu
             builder.Entity<LegalDocument>()
                 .HasOne(d => d.Variant)
-                .WithMany() // opcjonalnie: .WithMany(v => v.LegalDocuments)
+                .WithMany() // opcjonalnie: .WithMany(v => v.LegalDocuments) jeśli dodasz kolekcję
                 .HasForeignKey(d => d.VariantId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Dodatkowo (rekomendowane): indeksy pod typowe zapytania
+            // Indeksy (praktyczne pod Twoje LINQ i listy)
             builder.Entity<AnalysisRequest>()
                 .HasIndex(a => new { a.ApplicationUserId, a.CreatedAt });
 
@@ -49,6 +51,9 @@ namespace BuildMaX.Web.Data
 
             builder.Entity<AnalysisRequest>()
                 .HasIndex(a => a.BuiltUpPercent);
+
+            builder.Entity<LegalDocument>()
+                .HasIndex(d => new { d.VariantId, d.Category });
         }
     }
 }
