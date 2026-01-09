@@ -1,0 +1,28 @@
+@model IEnumerable<BuildMaX.Web.Models.Domain.Variant>
+@{
+    ViewData["Title"] = "Cennik";
+}
+
+<h1>Cennik wariantów</h1>
+
+<div class="card">
+<table>
+<thead>
+<tr>
+    <th>Nazwa</th>
+    <th>Cena</th>
+    <th>Opis</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var v in Model)
+{
+<tr>
+    <td>@v.Name</td>
+    <td>@v.Price PLN</td>
+    <td>@v.Description</td>
+</tr>
+}
+</tbody>
+</table>
+</div>
