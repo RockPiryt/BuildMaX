@@ -1,0 +1,26 @@
+@model BuildMaX.Web.Models.Domain.LegalDocument
+
+@{
+    ViewData["Title"] = "Szczegóły dokumentu";
+}
+
+<h1>Szczegóły dokumentu prawnego</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Tytuł</dt>
+    <dd class="col-sm-9">@Model.Title</dd>
+
+    <dt class="col-sm-3">Kategoria</dt>
+    <dd class="col-sm-9">@Model.Category</dd>
+
+    <dt class="col-sm-3">Wariant</dt>
+    <dd class="col-sm-9">@Model.Variant?.Name</dd>
+
+    <dt class="col-sm-3">URL</dt>
+    <dd class="col-sm-9">
+        <a href="@Model.Url" target="_blank">@Model.Url</a>
+    </dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.LegalDocumentId" class="btn btn-primary">Edytuj</a>
+<a asp-action="Index" class="btn btn-secondary">Wróć</a>

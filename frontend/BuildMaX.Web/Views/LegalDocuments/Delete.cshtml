@@ -1,0 +1,28 @@
+@model BuildMaX.Web.Models.Domain.LegalDocument
+
+@{
+    ViewData["Title"] = "Usuń dokument";
+}
+
+<h1>Usuń dokument</h1>
+
+<div class="alert alert-warning">
+    Czy na pewno chcesz usunąć ten dokument?
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Tytuł</dt>
+    <dd class="col-sm-9">@Model.Title</dd>
+
+    <dt class="col-sm-3">Kategoria</dt>
+    <dd class="col-sm-9">@Model.Category</dd>
+
+    <dt class="col-sm-3">Wariant</dt>
+    <dd class="col-sm-9">@Model.Variant?.Name</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="LegalDocumentId" />
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>

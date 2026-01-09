@@ -1,0 +1,71 @@
+@model IEnumerable<BuildMaX.Web.Models.Domain.LegalDocument>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Dokumenty prawne";
+    var categories = ViewData["Categories"] as List<string> ?? new();
+    var variants = ViewData["Variants"] as SelectList;
+    var selectedCategory = ViewData["SelectedCategory"] as string;
+    var selectedVariantId = ViewData["SelectedVariantId"] as int?;
+}
+
+<h1>Dokumenty prawne</h1>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <select name="category" class="form-select">
+            <option value="">-- Wszystkie kategorie --</option>
+            @foreach (var c in categories)
+            {
+                <option value="@c" selected="@(c == selectedCategory)">
+                    @c
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select name="variantId" class="form-select" asp-items="variants">
+            <option value="">-- Wszystkie warianty --</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Filtruj</button>
+        <a asp-action="Index" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Dodaj dokument</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tytuł</th>
+            <th>Kategoria</th>
+            <th>Wariant</th>
+            <th>URL</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Title</td>
+            <td>@item.Category</td>
+            <td>@item.Variant?.Name</td>
+            <td>
+                <a href="@item.Url" target="_blank">link</a>
+            </td>
+            <td class="text-end">
+                <a asp-action="Details" asp-route-id="@item.LegalDocumentId" class="btn btn-sm btn-outline-info">Szczegóły</a>
+                <a asp-action="Edit" asp-route-id="@item.LegalDocumentId" class="btn btn-sm btn-outline-primary">Edytuj</a>
+                <a asp-action="Delete" asp-route-id="@item.LegalDocumentId" class="btn btn-sm btn-outline-danger">Usuń</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
