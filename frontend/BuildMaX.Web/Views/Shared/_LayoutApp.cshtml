@@ -1,0 +1,57 @@
+@* (layout 1) *@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">BuildMaX</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navApp">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navApp">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="AnalysisRequests" asp-action="Index">Analizy</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="AnalysisRequests" asp-action="Create">Nowa analiza</a>
+                </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Admin</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="Variants" asp-action="Index">Warianty</a></li>
+                            <li><a class="dropdown-item" asp-controller="LegalDocuments" asp-action="Index">Dokumenty</a></li>
+                        </ul>
+                    </li>
+                }
+
+                @if (User.IsInRole("Admin") || User.IsInRole("Analyst"))
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Analityk</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="AnalysisRequests" asp-action="Index">Wszystkie analizy</a></li>
+                            <li><a class="dropdown-item" asp-controller="AnalysisRequests" asp-action="Dashboard">Dashboard</a></li>
+                            <li><a class="dropdown-item" asp-controller="AnalysisRequests" asp-action="ProfitabilityRanking">Ranking opłacalności</a></li>
+                        </ul>
+                    </li>
+                }
+
+                
+            </ul>
+
+            <partial name="_LoginPartial" />
+        </div>
+    </div>
+</nav>
+
+<main class="container-fluid mt-4">
+    @RenderBody()
+</main>
+
+<footer class="border-top mt-5 py-3 text-muted">
+    <div class="container">
+        <small>&copy; @DateTime.Now.Year BuildMaX — Interis</small>
+    </div>
+</footer>
