@@ -1,48 +1,195 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+﻿/* BuildMaX Theme: Charcoal + Yellow accent
+   Palette inspired by: #111827 (charcoal), #F2C94C (yellow), neutrals.
+*/
 
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+:root{
+  --bm-charcoal: #111827;        /* deep charcoal */
+  --bm-charcoal-2: #0b1220;      /* darker */
+  --bm-surface: #0f172a;         /* dark surface */
+  --bm-border: rgba(255,255,255,.10);
+
+  --bm-yellow: #f2c94c;          /* accent */
+  --bm-yellow-2: #ffd35a;        /* hover accent */
+  --bm-text: #e5e7eb;            /* on dark */
+  --bm-muted: rgba(229,231,235,.72);
+  --bm-link: #f2c94c;
+
+  --bm-radius: 14px;
+  --bm-shadow: 0 10px 28px rgba(0,0,0,.35);
 }
 
-a {
-  color: #0077cc;
+/* Base */
+html, body { height: 100%; }
+body{
+  padding-top: 72px; /* fixed-top navbar spacing */
+  background: radial-gradient(1200px 600px at 20% 0%, rgba(242,201,76,.12), transparent 60%),
+              radial-gradient(900px 500px at 85% 20%, rgba(255,211,90,.10), transparent 55%),
+              linear-gradient(180deg, var(--bm-charcoal), var(--bm-charcoal-2));
+  color: var(--bm-text);
 }
 
-.btn-primary {
+/* Typography tweaks */
+h1,h2,h3,h4,h5 { letter-spacing: .2px; }
+p { color: var(--bm-muted); }
+
+/* Links */
+a{ color: var(--bm-link); }
+a:hover{ color: var(--bm-yellow-2); }
+
+/* Containers: keep readable width */
+.container, .container-fluid{
+  max-width: 1140px;
+}
+
+/* Navbar (Public + App) */
+.navbar{
+  border-bottom: 1px solid var(--bm-border);
+  backdrop-filter: blur(8px);
+}
+.navbar.bg-dark,
+.navbar.bg-light{
+  background: rgba(17,24,39,.88) !important; /* unify public/app */
+}
+.navbar-brand{
+  font-weight: 700;
+  letter-spacing: .4px;
+  color: #fff !important;
+}
+.navbar .nav-link{
+  color: rgba(255,255,255,.78) !important;
+  transition: color .15s ease, opacity .15s ease;
+}
+.navbar .nav-link:hover{
+  color: #fff !important;
+}
+.navbar .btn-primary{
+  box-shadow: none;
+}
+
+/* Buttons */
+.btn{
+  border-radius: 12px;
+  font-weight: 600;
+}
+.btn-primary{
+  background: var(--bm-yellow) !important;
+  border-color: var(--bm-yellow) !important;
+  color: #111827 !important;
+}
+.btn-primary:hover{
+  background: var(--bm-yellow-2) !important;
+  border-color: var(--bm-yellow-2) !important;
+  color: #111827 !important;
+}
+.btn-outline-primary{
+  border-color: rgba(242,201,76,.65) !important;
+  color: var(--bm-yellow) !important;
+}
+.btn-outline-primary:hover{
+  background: rgba(242,201,76,.12) !important;
+  color: #fff !important;
+  border-color: var(--bm-yellow) !important;
+}
+.btn-link{
+  color: var(--bm-yellow) !important;
+}
+
+/* Cards / Surfaces */
+.card, .rounded-3, .border, .bg-body-tertiary{
+  border-radius: var(--bm-radius) !important;
+}
+.card{
+  background: rgba(15,23,42,.75);
+  border: 1px solid var(--bm-border);
+  box-shadow: var(--bm-shadow);
+  color: var(--bm-text);
+}
+.card-header{
+  border-bottom: 1px solid var(--bm-border);
+  background: rgba(17,24,39,.55);
+}
+.card .text-body-secondary{
+  color: var(--bm-muted) !important;
+}
+.shadow-sm{ box-shadow: var(--bm-shadow) !important; }
+
+/* Jumbotron-ish blocks */
+.bg-body-tertiary{
+  background: rgba(15,23,42,.72) !important;
+  border: 1px solid var(--bm-border) !important;
+}
+.text-bg-dark{
+  background: rgba(17,24,39,.92) !important;
+  border: 1px solid var(--bm-border);
+}
+
+/* Tables */
+.table{
+  color: var(--bm-text);
+}
+.table thead th{
+  color: rgba(255,255,255,.85);
+  border-bottom: 1px solid var(--bm-border);
+}
+.table td, .table th{
+  border-color: var(--bm-border) !important;
+}
+.table-striped>tbody>tr:nth-of-type(odd)>*{
+  color: var(--bm-text);
+  background-color: rgba(255,255,255,.03) !important;
+}
+
+/* Forms */
+.form-control, .form-select{
+  background: rgba(15,23,42,.65);
+  border: 1px solid var(--bm-border);
+  color: var(--bm-text);
+  border-radius: 12px;
+}
+.form-control:focus, .form-select:focus{
+  border-color: rgba(242,201,76,.7);
+  box-shadow: 0 0 0 .2rem rgba(242,201,76,.18);
+  background: rgba(15,23,42,.75);
+  color: var(--bm-text);
+}
+.form-label{ color: rgba(255,255,255,.85); }
+
+/* Dropdowns */
+.dropdown-menu{
+  background: rgba(17,24,39,.98);
+  border: 1px solid var(--bm-border);
+  border-radius: 12px;
+  box-shadow: var(--bm-shadow);
+}
+.dropdown-item{
+  color: rgba(255,255,255,.85);
+}
+.dropdown-item:hover{
+  background: rgba(242,201,76,.10);
   color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+/* Footer (no absolute positioning) */
+footer{
+  color: rgba(229,231,235,.6);
+}
+footer.border-top{
+  border-top: 1px solid var(--bm-border) !important;
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+/* Utility: pricing header spacing */
+.pricing-header{
+  max-width: 760px;
 }
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+/* Badges: optional if you use bootstrap badge classes */
+.badge{
+  border-radius: 999px;
+  font-weight: 700;
 }
 
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+/* Remove old template footer absolute behavior */
+.footer{
+  position: static !important;
+  line-height: normal !important;
 }
