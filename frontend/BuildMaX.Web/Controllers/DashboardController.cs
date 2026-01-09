@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-
+//(ręczny widok, statystyki LINQ)
 namespace BuildMaX.Web.Controllers
 {
     [Authorize]

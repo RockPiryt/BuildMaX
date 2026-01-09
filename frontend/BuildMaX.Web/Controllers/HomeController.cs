@@ -4,6 +4,7 @@ using BuildMaX.Web.Models;
 
 namespace BuildMaX.Web.Controllers;
 
+//(public: landing/pricing)
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;

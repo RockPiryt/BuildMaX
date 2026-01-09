@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+//(CRUD zleceń; role + LINQ)
 namespace BuildMaX.Web.Controllers
 {
     [Authorize]

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+//(CRUD admin)
 namespace BuildMaX.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
