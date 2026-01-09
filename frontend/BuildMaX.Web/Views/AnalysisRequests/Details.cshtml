@@ -1,0 +1,59 @@
+@model BuildMaX.Web.Models.Domain.AnalysisRequest
+@{
+    ViewData["Title"] = "Szczegóły analizy";
+}
+
+<h1>Szczegóły analizy</h1>
+
+<div class="card">
+    <dl>
+        <dt>ID</dt>
+        <dd>@Model.AnalysisRequestId</dd>
+
+        <dt>Data utworzenia</dt>
+        <dd>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+
+        <dt>Wariant</dt>
+        <dd>@Model.Variant?.Name</dd>
+
+        <dt>Adres</dt>
+        <dd>@Model.Address</dd>
+
+        <dt>Status</dt>
+        <dd>@Model.Status</dd>
+
+        <hr />
+
+        <dt>Powierzchnia działki (m²)</dt>
+        <dd>@Model.PlotAreaM2</dd>
+
+        <dt>Powierzchnia modułu (m²)</dt>
+        <dd>@Model.ModuleAreaM2</dd>
+
+        <dt>Procent zabudowy</dt>
+        <dd>@(Model.BuiltUpPercent?.ToString("0.##") ?? "-")</dd>
+
+        <dt>Powierzchnia zielona (m²)</dt>
+        <dd>@(Model.GreenAreaM2?.ToString("0.##") ?? "-")</dd>
+
+        <dt>Powierzchnia utwardzona (m²)</dt>
+        <dd>@(Model.HardenedAreaM2?.ToString("0.##") ?? "-")</dd>
+
+        <dt>Miejsca parkingowe TIR</dt>
+        <dd>@(Model.TruckParkingSpots?.ToString() ?? "-")</dd>
+
+        <dt>Miejsca parkingowe osobowe</dt>
+        <dd>@(Model.CarParkingSpots?.ToString() ?? "-")</dd>
+
+        <dt>Ryzyko archeologiczne</dt>
+        <dd>@(Model.HasArchaeologyRisk ? "Tak" : "Nie")</dd>
+
+        <dt>Duże roboty ziemne</dt>
+        <dd>@(Model.HasEarthworksRisk ? "Tak" : "Nie")</dd>
+    </dl>
+
+    <hr />
+
+    <a asp-action="Edit" asp-route-id="@Model.AnalysisRequestId">Edytuj</a> |
+    <a asp-action="Index">Wróć</a>
+</div>

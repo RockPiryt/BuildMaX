@@ -1,0 +1,77 @@
+@model BuildMaX.Web.Models.Domain.AnalysisRequest
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using BuildMaX.Web.Models.Domain.Enums
+
+@{
+    ViewData["Title"] = "Edycja analizy";
+}
+
+<h1>Edycja analizy</h1>
+
+<div class="card">
+    <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="AnalysisRequestId" />
+
+        <div asp-validation-summary="All"></div>
+
+        <label asp-for="VariantId"></label>
+        <select asp-for="VariantId" asp-items="@(new SelectList(ViewBag.Variants, "VariantId", "Name"))"></select>
+        <span asp-validation-for="VariantId"></span>
+
+        <label asp-for="Address"></label>
+        <input asp-for="Address" />
+        <span asp-validation-for="Address"></span>
+
+        <label asp-for="PlotAreaM2"></label>
+        <input asp-for="PlotAreaM2" />
+        <span asp-validation-for="PlotAreaM2"></span>
+
+        <label asp-for="ModuleAreaM2"></label>
+        <input asp-for="ModuleAreaM2" />
+        <span asp-validation-for="ModuleAreaM2"></span>
+
+        <hr />
+
+        <h2>Wyniki (opcjonalnie)</h2>
+
+        <label asp-for="BuiltUpPercent"></label>
+        <input asp-for="BuiltUpPercent" />
+        <span asp-validation-for="BuiltUpPercent"></span>
+
+        <label asp-for="GreenAreaM2"></label>
+        <input asp-for="GreenAreaM2" />
+        <span asp-validation-for="GreenAreaM2"></span>
+
+        <label asp-for="HardenedAreaM2"></label>
+        <input asp-for="HardenedAreaM2" />
+        <span asp-validation-for="HardenedAreaM2"></span>
+
+        <label asp-for="TruckParkingSpots"></label>
+        <input asp-for="TruckParkingSpots" />
+        <span asp-validation-for="TruckParkingSpots"></span>
+
+        <label asp-for="CarParkingSpots"></label>
+        <input asp-for="CarParkingSpots" />
+        <span asp-validation-for="CarParkingSpots"></span>
+
+        <label asp-for="HasArchaeologyRisk"></label>
+        <input asp-for="HasArchaeologyRisk" />
+
+        <label asp-for="HasEarthworksRisk"></label>
+        <input asp-for="HasEarthworksRisk" />
+
+        <label asp-for="Status"></label>
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<AnalysisStatus>()"></select>
+
+        <hr />
+
+        <button type="submit">Zapisz</button>
+        <a asp-action="Index" class="secondary">Wróć</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

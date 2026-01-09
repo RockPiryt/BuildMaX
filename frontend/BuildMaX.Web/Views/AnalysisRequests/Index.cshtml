@@ -1,0 +1,40 @@
+@model IEnumerable<BuildMaX.Web.Models.Domain.AnalysisRequest>
+@{
+    ViewData["Title"] = "Analizy";
+}
+
+<h1>Analizy</h1>
+
+<p>
+    <a asp-action="Create">+ Nowa analiza</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Wariant</th>
+            <th>Adres</th>
+            <th>Status</th>
+            <th>Zabudowa %</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+            <td>@item.Variant?.Name</td>
+            <td>@item.Address</td>
+            <td>@item.Status</td>
+            <td>@(item.BuiltUpPercent?.ToString("0.##") ?? "-")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.AnalysisRequestId">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.AnalysisRequestId">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.AnalysisRequestId">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

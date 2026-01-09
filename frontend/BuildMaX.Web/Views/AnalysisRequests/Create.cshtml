@@ -1,0 +1,40 @@
+@model BuildMaX.Web.Models.Domain.AnalysisRequest
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Nowa analiza";
+}
+
+<h1>Nowa analiza</h1>
+
+<div class="card">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All"></div>
+
+        <label asp-for="VariantId"></label>
+        <select asp-for="VariantId" asp-items="@(new SelectList(ViewBag.Variants, "VariantId", "Name"))"></select>
+        <span asp-validation-for="VariantId"></span>
+
+        <label asp-for="Address"></label>
+        <input asp-for="Address" />
+        <span asp-validation-for="Address"></span>
+
+        <label asp-for="PlotAreaM2"></label>
+        <input asp-for="PlotAreaM2" />
+        <span asp-validation-for="PlotAreaM2"></span>
+
+        <label asp-for="ModuleAreaM2"></label>
+        <input asp-for="ModuleAreaM2" />
+        <span asp-validation-for="ModuleAreaM2"></span>
+
+        <hr />
+
+        <button type="submit">Utwórz</button>
+        <a asp-action="Index" class="secondary">Wróć</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
