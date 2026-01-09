@@ -27,8 +27,12 @@
             <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
             <td>@item.Variant?.Name</td>
             <td>@item.Address</td>
-            <td>@item.Status</td>
-            <td>@(item.BuiltUpPercent?.ToString("0.##") ?? "-")</td>
+            <td>
+                <status-badge status="@item.Status"></status-badge>
+            </td>
+            <td>
+                <profit-badge percent="@item.BuiltUpPercent"></profit-badge>
+            </td>
             <td>
                 <a asp-action="Details" asp-route-id="@item.AnalysisRequestId">Details</a> |
                 <a asp-action="Edit" asp-route-id="@item.AnalysisRequestId">Edit</a> |
