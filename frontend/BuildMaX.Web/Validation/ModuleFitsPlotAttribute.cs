@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
+// (własny validator: cross-field)
 namespace BuildMaX.Web.Validation
 {
     public class ModuleFitsPlotAttribute : ValidationAttribute

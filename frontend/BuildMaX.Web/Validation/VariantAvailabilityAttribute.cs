@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
+// (opcjonalnie: reguły wariantów)
 namespace BuildMaX.Web.Validation
 {
     public class VariantAvailabilityAttribute : ValidationAttribute
