@@ -3,6 +3,7 @@ using BuildMaX.Web.Data;
 using BuildMaX.Web.Models.Domain;
 using BuildMaX.Web.Models.Domain.Enums;
 using BuildMaX.Web.Services.Analysis;
+using BuildMaX.Web.Services.Documents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +15,13 @@ namespace BuildMaX.Web.Controllers
     {
         private readonly AppDbContext _db;
         private readonly IAnalysisCalculator _calc;
+        private readonly IPdfReportService _pdf;
 
-        public AnalysisRequestsController(AppDbContext db, IAnalysisCalculator calc)
+        public AnalysisRequestsController(AppDbContext db, IAnalysisCalculator calc, IPdfReportService pdf)
         {
             _db = db;
             _calc = calc;
+            _pdf = pdf;
         }
 
         // LISTA: User widzi swoje; Admin/Analyst widzą wszystko
@@ -313,5 +316,31 @@ namespace BuildMaX.Web.Controllers
             public string Label { get; set; } = "";
             public int Count { get; set; }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GeneratePdf(int id)
+        {
+            var ar = await _db.AnalysisRequests
+                .Include(a => a.Variant)
+                .Include(a => a.ApplicationUser)
+                .FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
+
+            if (ar is null) return NotFound();
+            if (!CanAccess(ar)) return Forbid();
+
+            // User może pobrać PDF tylko jeśli wariant to przewiduje (opcjonalne)
+            var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
+            if (!isAdminOrAnalyst && !ar.Variant.IncludesPdf)
+                return Forbid();
+
+            // Dolicz wyniki jeśli potrzeba
+            var computation = _calc.ComputeAndApply(ar);
+
+            var bytes = _pdf.GenerateAnalysisRequestReport(ar, ar.Variant, computation);
+            var fileName = $"raport-analizy-{ar.AnalysisRequestId}.pdf";
+
+            return File(bytes, "application/pdf", fileName);
+        }
+
     }
 }
