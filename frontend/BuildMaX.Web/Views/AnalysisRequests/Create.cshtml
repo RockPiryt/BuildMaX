@@ -1,5 +1,4 @@
 @model BuildMaX.Web.Models.Domain.AnalysisRequest
-@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
     ViewData["Title"] = "Nowa analiza";
@@ -8,30 +7,65 @@
 <h1>Nowa analiza</h1>
 
 <div class="card">
+    <div class="mb-3">
+        <strong>Wybrany wariant:</strong>
+        @if (Model.Variant != null)
+        {
+            <span>@Model.Variant.Name</span>
+        }
+        else
+        {
+            <span>Wariant #@Model.VariantId</span>
+        }
+    </div>
+
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
-        <div asp-validation-summary="All"></div>
+        <div asp-validation-summary="All" class="text-danger"></div>
 
-        <label asp-for="VariantId"></label>
-        <select asp-for="VariantId" asp-items="@(new SelectList(ViewBag.Variants, "VariantId", "Name"))"></select>
-        <span asp-validation-for="VariantId"></span>
+        <!-- Wariant jest przekazany z Pricing i nieedytowalny -->
+        <input type="hidden" asp-for="VariantId" />
 
-        <label asp-for="Address"></label>
-        <input asp-for="Address" />
-        <span asp-validation-for="Address"></span>
-
-        <label asp-for="PlotAreaM2"></label>
-        <input asp-for="PlotAreaM2" />
-        <span asp-validation-for="PlotAreaM2"></span>
-
-        <label asp-for="ModuleAreaM2"></label>
-        <input asp-for="ModuleAreaM2" />
-        <span asp-validation-for="ModuleAreaM2"></span>
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label"></label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
 
         <hr />
 
-        <button type="submit">Utwórz</button>
-        <a asp-action="Index" class="secondary">Wróć</a>
+        <h3>Działka</h3>
+        <div class="mb-3">
+            <label asp-for="PlotWidthM" class="form-label"></label>
+            <input asp-for="PlotWidthM" class="form-control" />
+            <span asp-validation-for="PlotWidthM" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PlotLengthM" class="form-label"></label>
+            <input asp-for="PlotLengthM" class="form-control" />
+            <span asp-validation-for="PlotLengthM" class="text-danger"></span>
+        </div>
+
+        <hr />
+
+        <h3>Moduł</h3>
+        <div class="mb-3">
+            <label asp-for="ModuleWidthM" class="form-label"></label>
+            <input asp-for="ModuleWidthM" class="form-control" />
+            <span asp-validation-for="ModuleWidthM" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ModuleLengthM" class="form-label"></label>
+            <input asp-for="ModuleLengthM" class="form-control" />
+            <span asp-validation-for="ModuleLengthM" class="text-danger"></span>
+        </div>
+
+        <hr />
+
+        <button type="submit" class="btn btn-primary">Utwórz</button>
+        <a asp-action="Index" class="btn btn-secondary">Wróć</a>
     </form>
 </div>
 

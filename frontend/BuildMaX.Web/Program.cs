@@ -1,6 +1,8 @@
 using BuildMaX.Web.Data;
 using BuildMaX.Web.Data.Seed;
 using BuildMaX.Web.Models.Identity;
+using BuildMaX.Web.Services.Analysis;
+using BuildMaX.Web.Services.Documents;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +29,11 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+// kalkulator analizy
+builder.Services.AddScoped<IAnalysisCalculator, AnalysisCalculator>();
+
+// PDF
+builder.Services.AddScoped<IPdfReportService, PdfReportService>();
 
 var app = builder.Build();
 
@@ -51,4 +58,3 @@ app.MapControllerRoute(
 await DbSeeder.SeedAsync(app.Services);
 
 app.Run();
-

@@ -2,9 +2,9 @@ using System.Security.Claims;
 using BuildMaX.Web.Data;
 using BuildMaX.Web.Models.Domain;
 using BuildMaX.Web.Models.Domain.Enums;
+using BuildMaX.Web.Services.Analysis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BuildMaX.Web.Controllers
@@ -13,10 +13,12 @@ namespace BuildMaX.Web.Controllers
     public class AnalysisRequestsController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly IAnalysisCalculator _calc;
 
-        public AnalysisRequestsController(AppDbContext db)
+        public AnalysisRequestsController(AppDbContext db, IAnalysisCalculator calc)
         {
             _db = db;
+            _calc = calc;
         }
 
         // LISTA: User widzi swoje; Admin/Analyst widzą wszystko
@@ -67,23 +69,40 @@ namespace BuildMaX.Web.Controllers
             return View(ar);
         }
 
-        // CREATE: zwykły User + Admin (u Ciebie rola "User" jest seedowana)
+        // CREATE: wariant jest już kliknięty (Pricing -> Create?variantId=...)
         [Authorize(Roles = "User,Admin")]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int variantId)
         {
-            await PopulateVariantsSelectListAsync();
-            return View();
+            var variant = await _db.Variants
+                .AsNoTracking()
+                .FirstOrDefaultAsync(v => v.VariantId == variantId);
+
+            if (variant is null) return NotFound();
+
+            var ar = new AnalysisRequest
+            {
+                VariantId = variant.VariantId,
+                Variant = variant
+            };
+
+            return View(ar);
         }
 
-        // CREATE POST
+        // CREATE POST: user podaje tylko wymiary + adres, wariant jest hidden
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "User,Admin")]
-        public async Task<IActionResult> Create([Bind("VariantId,Address,PlotAreaM2,ModuleAreaM2")] AnalysisRequest ar)
+        public async Task<IActionResult> Create([Bind("VariantId,Address,PlotWidthM,PlotLengthM,ModuleWidthM,ModuleLengthM")] AnalysisRequest ar)
         {
+            // walidacja bezpieczeństwa: czy wariant istnieje
+            var variant = await _db.Variants.AsNoTracking().FirstOrDefaultAsync(v => v.VariantId == ar.VariantId);
+            if (variant is null)
+                ModelState.AddModelError(nameof(ar.VariantId), "Wybrany wariant nie istnieje.");
+
             if (!ModelState.IsValid)
             {
-                await PopulateVariantsSelectListAsync(ar.VariantId);
+                // żeby widok mógł wyświetlić nazwę wariantu
+                ar.Variant = variant!;
                 return View(ar);
             }
 
@@ -91,10 +110,17 @@ namespace BuildMaX.Web.Controllers
             ar.Status = AnalysisStatus.New;
             ar.CreatedAt = DateTime.UtcNow;
 
+            // policz pola wyliczane
+            _calc.ComputeAndApply(ar, new AnalysisAssumptions
+            {
+                GreenPercent = 0.25m,
+                GeoGridsHardenedReduction = 0.0m
+            });
+
             _db.AnalysisRequests.Add(ar);
             await _db.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = ar.AnalysisRequestId });
         }
 
         // EDIT GET: Admin/Analyst
@@ -109,13 +135,12 @@ namespace BuildMaX.Web.Controllers
 
             if (ar is null) return NotFound();
 
-            await PopulateVariantsSelectListAsync(ar.VariantId);
             return View(ar);
         }
 
         // EDIT POST:
-        // - Analyst: tylko status + pola wynikowe/ryzyka
-        // - Admin: pełna edycja
+        // - Analyst: tylko status + pola wynikowe/ryzyka (jak było)
+        // - Admin: może zmienić wejście (wymiary) i wtedy robimy auto-przeliczenie
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Analyst")]
@@ -123,14 +148,16 @@ namespace BuildMaX.Web.Controllers
         {
             if (id != input.AnalysisRequestId) return NotFound();
 
-            var ar = await _db.AnalysisRequests.FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
+            var ar = await _db.AnalysisRequests
+                .Include(a => a.Variant)
+                .FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
+
             if (ar is null) return NotFound();
 
             var isAnalystOnly = User.IsInRole("Analyst") && !User.IsInRole("Admin");
 
             if (isAnalystOnly)
             {
-                // Analyst: tylko "workflow"
                 ar.Status = input.Status;
                 ar.BuiltUpPercent = input.BuiltUpPercent;
                 ar.GreenAreaM2 = input.GreenAreaM2;
@@ -144,26 +171,28 @@ namespace BuildMaX.Web.Controllers
                 return RedirectToAction(nameof(Details), new { id });
             }
 
-            // Admin: walidujemy normalnie
+            // ADMIN
             if (!ModelState.IsValid)
             {
-                await PopulateVariantsSelectListAsync(input.VariantId);
                 return View(input);
             }
 
-            ar.VariantId = input.VariantId;
+            // Admin zmienia wejście
             ar.Address = input.Address;
-            ar.PlotAreaM2 = input.PlotAreaM2;
-            ar.ModuleAreaM2 = input.ModuleAreaM2;
+            ar.PlotWidthM = input.PlotWidthM;
+            ar.PlotLengthM = input.PlotLengthM;
+            ar.ModuleWidthM = input.ModuleWidthM;
+            ar.ModuleLengthM = input.ModuleLengthM;
 
+            // opcjonalnie: admin może też zmienić status
             ar.Status = input.Status;
-            ar.BuiltUpPercent = input.BuiltUpPercent;
-            ar.GreenAreaM2 = input.GreenAreaM2;
-            ar.HardenedAreaM2 = input.HardenedAreaM2;
-            ar.TruckParkingSpots = input.TruckParkingSpots;
-            ar.CarParkingSpots = input.CarParkingSpots;
-            ar.HasArchaeologyRisk = input.HasArchaeologyRisk;
-            ar.HasEarthworksRisk = input.HasEarthworksRisk;
+
+            // auto przeliczenie wyników po zmianie wejścia
+            _calc.ComputeAndApply(ar, new AnalysisAssumptions
+            {
+                GreenPercent = 0.25m,
+                GeoGridsHardenedReduction = 0.0m
+            });
 
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id });
@@ -269,18 +298,6 @@ namespace BuildMaX.Web.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return ar.ApplicationUserId == userId;
-        }
-
-        private async Task PopulateVariantsSelectListAsync(int? selectedVariantId = null)
-        {
-            var variants = await _db.Variants
-                .AsNoTracking()
-                .OrderBy(v => v.Price)
-                .ThenBy(v => v.Name)
-                .Select(v => new { v.VariantId, v.Name })
-                .ToListAsync();
-
-            ViewData["VariantId"] = new SelectList(variants, "VariantId", "Name", selectedVariantId);
         }
 
         // proste VM do dashboardu

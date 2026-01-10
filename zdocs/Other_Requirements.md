@@ -183,3 +183,21 @@ trackout 30 m × długość budynku
 redukcję utwardzeń geokratami
 
 Nazwy namespace: BuildMaX.Web.Services.Analysis.
+---
+2) Poprawiony AnalysisRequestsController.cs
+
+Zmiany kluczowe:
+
+Dodany IAnalysisCalculator _calc;
+
+Create(int variantId) – wariant przychodzi z Pricing, wczytujemy go i ustawiamy w modelu
+
+Create POST – binduje tylko pola wejściowe i VariantId, liczy wyniki kalkulatorem, zapisuje
+
+Usunięte PopulateVariantsSelectListAsync() z Create (bo wariant nie jest wybierany z dropdowna)
+
+Edit zostawiam prawie jak masz, ale Admin edytuje wejście (wymiary), a wyniki możesz:
+
+liczyć automatycznie po zapisie (ja tak robię), albo
+
+zostawić Analystowi ręczną kontrolę (Twoje założenie). Poniżej: Admin po zmianie wejścia -> auto przeliczenie.
