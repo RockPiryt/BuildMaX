@@ -1,8 +1,10 @@
-using ZAD3_BUILDMAX.Services.Analysis;
+using BuildMaX.Web.Models.Domain;
+using BuildMaX.Web.Services.Analysis;
 
-namespace ZAD3_BUILDMAX.Services.Documents;
+namespace BuildMaX.Web.Services.Documents;
 
 public interface IPdfReportService
 {
-    byte[] GenerateAnalysisReportPdf(AnalysisResult result, string reportTitle);
+    // MVP: PDF na bazie encji + wariantu; computation jest opcjonalne
+    byte[] GenerateAnalysisRequestReport(AnalysisRequest ar, Variant variant, AnalysisComputation? computation = null);
 }

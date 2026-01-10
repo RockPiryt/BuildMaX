@@ -1,16 +1,24 @@
-//  (wariant 1: raport PDF)
+using BuildMaX.Web.Models.Domain;
+using BuildMaX.Web.Services.Analysis;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using ZAD3_BUILDMAX.Services.Analysis;
 
-namespace ZAD3_BUILDMAX.Services.Documents;
+namespace BuildMaX.Web.Services.Documents;
 
 public sealed class PdfReportService : IPdfReportService
 {
-    public byte[] GenerateAnalysisReportPdf(AnalysisResult result, string reportTitle)
+    public byte[] GenerateAnalysisRequestReport(AnalysisRequest ar, Variant variant, AnalysisComputation? computation = null)
     {
         QuestPDF.Settings.License = LicenseType.Community;
+
+        var title = $"Raport analizy – {variant.Name}";
+        var created = ar.CreatedAt.ToLocalTime();
+
+        // Jeśli computation nie podane, a chcesz mieć np. ModuleCount w PDF,
+        // to po prostu PDF pokaże dane z encji (BuiltUpPercent itd.) bez modułów.
+        var moduleCountText = computation is null ? "-" : computation.ModuleCount.ToString();
+        var warnings = computation?.Warnings ?? new List<string>();
 
         var doc = Document.Create(container =>
         {
@@ -20,8 +28,9 @@ public sealed class PdfReportService : IPdfReportService
 
                 page.Header().Column(col =>
                 {
-                    col.Item().Text(reportTitle).FontSize(18).SemiBold();
-                    col.Item().Text($"Wygenerowano: {DateTime.Now:yyyy-MM-dd HH:mm}").FontSize(10).FontColor(Colors.Grey.Darken2);
+                    col.Item().Text(title).FontSize(18).SemiBold();
+                    col.Item().Text($"Adres: {ar.Address}").FontSize(10);
+                    col.Item().Text($"Data: {created:yyyy-MM-dd HH:mm}").FontSize(10).FontColor(Colors.Grey.Darken2);
                     col.Item().LineHorizontal(1);
                 });
 
@@ -29,47 +38,74 @@ public sealed class PdfReportService : IPdfReportService
                 {
                     col.Spacing(10);
 
-                    col.Item().Text("Podsumowanie").FontSize(14).SemiBold();
+                    col.Item().Text("Wariant").FontSize(13).SemiBold();
+                    col.Item().Text($"{variant.Name} ({variant.Price:N2} zł)");
 
-                    col.Item().Table(table =>
+                    col.Item().Text("Dane wejściowe").FontSize(13).SemiBold();
+                    col.Item().Table(t =>
                     {
-                        table.ColumnsDefinition(columns =>
+                        t.ColumnsDefinition(c =>
                         {
-                            columns.RelativeColumn(2);
-                            columns.RelativeColumn(3);
+                            c.RelativeColumn(2);
+                            c.RelativeColumn(3);
                         });
 
-                        Row(table, "Powierzchnia działki", $"{result.PlotAreaM2:N2} m²");
-                        Row(table, "Wymagana zieleń", $"{result.GreenRequiredM2:N2} m²");
-                        Row(table, "Pow. modułu (10x12)", $"{result.ModuleFootprintM2:N2} m²");
-                        Row(table, "Pow. zabudowy", $"{result.BuiltUpAreaM2:N2} m²");
-                        Row(table, "Zabudowa %", $"{result.BuiltUpPercent:N2}%");
-                        Row(table, "Wymagane parkingi", $"{result.ParkingSpacesRequired}");
+                        // Jeśli masz już w encji PlotWidthM/PlotLengthM/ModuleWidthM/ModuleLengthM, pokaż je:
+                        // (Jeśli jeszcze ich nie masz, usuń te linie i zostań przy PlotAreaM2/ModuleAreaM2)
+                        Row(t, "Działka", $"{GetDecimal(ar, "PlotWidthM"):N2} m × {GetDecimal(ar, "PlotLengthM"):N2} m");
+                        Row(t, "Moduł", $"{GetDecimal(ar, "ModuleWidthM"):N2} m × {GetDecimal(ar, "ModuleLengthM"):N2} m");
+
+                        Row(t, "Powierzchnia działki", $"{ar.PlotAreaM2:N2} m²");
+                        Row(t, "Powierzchnia modułu", $"{ar.ModuleAreaM2:N2} m²");
                     });
 
-                    col.Item().Text("Ocena").FontSize(14).SemiBold();
-                    col.Item().Text($"{result.ProfitabilityLabel} – {result.ProfitabilityComment}");
+                    col.Item().Text("Wyniki (MVP)").FontSize(13).SemiBold();
+                    col.Item().Table(t =>
+                    {
+                        t.ColumnsDefinition(c =>
+                        {
+                            c.RelativeColumn(2);
+                            c.RelativeColumn(3);
+                        });
 
-                    col.Item().Text("Ostrzeżenia").FontSize(14).SemiBold();
+                        Row(t, "Liczba modułów (wyliczona)", moduleCountText);
+                        Row(t, "Procent zabudowy", ar.BuiltUpPercent is null ? "-" : $"{ar.BuiltUpPercent:N2}%");
+                        Row(t, "Powierzchnia zielona", ar.GreenAreaM2 is null ? "-" : $"{ar.GreenAreaM2:N2} m²");
+                        Row(t, "Powierzchnia utwardzona", ar.HardenedAreaM2 is null ? "-" : $"{ar.HardenedAreaM2:N2} m²");
+                        Row(t, "Parking osobowy", ar.CarParkingSpots is null ? "-" : $"{ar.CarParkingSpots}");
+                        Row(t, "Parking TIR", ar.TruckParkingSpots is null ? "-" : $"{ar.TruckParkingSpots}");
+                    });
 
-                    if (result.Warnings.Count == 0)
+                    col.Item().Text("Ryzyka").FontSize(13).SemiBold();
+                    col.Item().Column(r =>
+                    {
+                        r.Spacing(4);
+                        r.Item().Text($"• Archeologia: {(ar.HasArchaeologyRisk ? "TAK" : "NIE")}");
+                        r.Item().Text($"• Duże roboty ziemne: {(ar.HasEarthworksRisk ? "TAK" : "NIE")}");
+                    });
+
+                    col.Item().Text("Ocena").FontSize(13).SemiBold();
+                    col.Item().Text(EvaluateProfitability(ar.BuiltUpPercent));
+
+                    col.Item().Text("Ostrzeżenia").FontSize(13).SemiBold();
+                    if (warnings.Count == 0)
                     {
                         col.Item().Text("Brak ostrzeżeń.").FontColor(Colors.Green.Darken2);
                     }
                     else
                     {
-                        col.Item().Column(wcol =>
+                        col.Item().Column(w =>
                         {
-                            wcol.Spacing(5);
-                            foreach (var w in result.Warnings)
-                                wcol.Item().Text($"• {w}");
+                            w.Spacing(4);
+                            foreach (var warn in warnings)
+                                w.Item().Text($"• {warn}");
                         });
                     }
                 });
 
                 page.Footer().AlignCenter().Text(x =>
                 {
-                    x.Span("BuildMax – raport analizy | strona ");
+                    x.Span("BuildMaX – raport | strona ");
                     x.CurrentPageNumber();
                     x.Span(" / ");
                     x.TotalPages();
@@ -80,6 +116,16 @@ public sealed class PdfReportService : IPdfReportService
         return doc.GeneratePdf();
     }
 
+    private static string EvaluateProfitability(decimal? builtUpPercent)
+    {
+        if (builtUpPercent is null) return "Brak wyliczonego procentu zabudowy.";
+
+        var p = builtUpPercent.Value;
+        if (p >= 40m) return "Ocena: Opłacalna (>= 40% zabudowy).";
+        if (p >= 30m) return "Ocena: Ryzyko (30–40% zabudowy).";
+        return "Ocena: Nieopłacalna (< 30% zabudowy).";
+    }
+
     private static void Row(TableDescriptor table, string label, string value)
     {
         table.Cell().Element(CellStyle).Text(label).SemiBold();
@@ -87,5 +133,20 @@ public sealed class PdfReportService : IPdfReportService
 
         static IContainer CellStyle(IContainer c) =>
             c.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(4).PaddingRight(10);
+    }
+
+    /// <summary>
+    /// Bezpieczny odczyt decimal po nazwie property (żeby PDF nie wywalał się jeśli jeszcze nie dodałaś tych pól do encji).
+    /// Gdy pola istnieją, pokaże ich wartości; gdy nie istnieją, zwróci 0.
+    /// </summary>
+    private static decimal GetDecimal(object obj, string propName)
+    {
+        var p = obj.GetType().GetProperty(propName);
+        if (p is null) return 0m;
+
+        var val = p.GetValue(obj);
+        if (val is decimal d) return d;
+
+        return 0m;
     }
 }
