@@ -99,6 +99,10 @@ A „obszary problemowe” można zasymulować:
 - jeśli builtUpPercent < 25% -> „niska chłonność”
 - pcjonalnie checkboxy w formularzu: „teren podmokły”, „archeologia” – i system generuje ostrzeżenia.
 
+## PDF 
+MVP -  QuestPDF (bardzo popularne i proste w użyciu w ASP.NET). 
+QuestPDF z NuGet.
+
 # Plan realizacji krok po kroku (żebyś to faktycznie zbudował)
 
 1. Utwórze projekt MVC + Identity.
