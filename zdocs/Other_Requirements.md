@@ -134,3 +134,52 @@ W README opisuje:
 - 2 ręczne widoki (linki)
 - 2 helpery (linki + opis)
 - 2 layouty (które widoki używają)
+
+## Opis
+Rozumiem wymaganie i w tej wersji kalkulator ma:
+
+1. przyjąć PlotAreaM2 oraz ModuleAreaM2 (powierzchnia pojedynczego modułu),
+2. sam wyliczyć ile modułów realnie “wejdzie”, uwzględniając:
+- 10 m strefę niebudowalną od granicy (setback),
+- drogi 5 m + chodniki 2 × 1,5 m,
+- trackout: 30 m × długość budynku,
+- zieleń jako typowo 20–30%,
+- utwardzenia (drogi/trackout) z opcją redukcji dzięki geokratom,
+
+3. policzyć wynikowe pola Twojej encji: BuiltUpPercent, GreenAreaM2, HardenedAreaM2, parkingi, ryzyka.
+
+----------------
+1. użytkownik klika „Wybierz/Zamów” na karcie wariantu,
+
+2. przechodzi do formularza Create, gdzie wariant jest już ustawiony, a user uzupełnia tylko dane działki i modułu,
+
+user nie może zmienić wariantu (albo może, ale domyślnie jest wybrany).
+
+---------
+Poniżej masz kompletny zestaw plików dla Services/Analysis (MVP pod prostokątną działkę + wymiary działki A×B i modułu C×D), zgodny z Twoim podejściem:
+
+user podaje: PlotWidthM, PlotLengthM, ModuleWidthM, ModuleLengthM
+
+kalkulator liczy:
+
+PlotAreaM2, ModuleAreaM2
+
+BuiltUpPercent, GreenAreaM2, HardenedAreaM2
+
+liczbę modułów (nie zapisujemy do DB, ale zwracamy w wyniku)
+
+CarParkingSpots, TruckParkingSpots
+
+ryzyka i ostrzeżenia
+
+uwzględnia:
+
+setback 10 m od granicy
+
+drogi 5 m + chodniki 2×1,5 m
+
+trackout 30 m × długość budynku
+
+redukcję utwardzeń geokratami
+
+Nazwy namespace: BuildMaX.Web.Services.Analysis.

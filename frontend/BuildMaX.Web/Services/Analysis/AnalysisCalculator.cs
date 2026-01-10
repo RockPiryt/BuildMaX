@@ -1,84 +1,192 @@
-// (logika obliczeń „chłonności”)
+using BuildMaX.Web.Models.Domain;
 
-namespace ZAD3_BUILDMAX.Services.Analysis;
+namespace BuildMaX.Web.Services.Analysis;
 
 public sealed class AnalysisCalculator : IAnalysisCalculator
 {
-    public AnalysisResult Calculate(AnalysisInput input)
+    public AnalysisComputation ComputeAndApply(AnalysisRequest ar, AnalysisAssumptions? assumptions = null)
     {
-        Validate(input);
+        assumptions ??= new AnalysisAssumptions();
+
+        // WYMAGANE: w modelu AnalysisRequest musisz mieć:
+        // PlotWidthM, PlotLengthM, ModuleWidthM, ModuleLengthM
+        ValidateInput(ar, assumptions);
+
+        // Pola wyliczane (systemowe)
+        ar.PlotAreaM2 = Round2(ar.PlotWidthM * ar.PlotLengthM);
+        ar.ModuleAreaM2 = Round2(ar.ModuleWidthM * ar.ModuleLengthM);
 
         var warnings = new List<string>();
 
-        // 1) Zieleń wymagana
-        var greenRequired = Round2(input.PlotAreaM2 * input.RequiredGreenPercent);
+        // Obszar budowalny po setback (10m od granic)
+        var buildableWidth = ar.PlotWidthM - 2m * assumptions.SetbackFromBorderM;
+        var buildableLength = ar.PlotLengthM - 2m * assumptions.SetbackFromBorderM;
 
-        // 2) Powierzchnia zabudowy z modułów
-        var moduleFootprint = Round2(input.ModuleWidthM * input.ModuleLengthM); // 10*12=120
-        var builtUpArea = Round2(moduleFootprint * input.ModuleCount);
-
-        // 3) Maks. możliwa zabudowa w MVP: działka minus zieleń (upraszczamy)
-        var maxBuildable = Round2(input.PlotAreaM2 - greenRequired);
-
-        if (builtUpArea > maxBuildable)
+        if (buildableWidth <= 0 || buildableLength <= 0)
         {
-            warnings.Add($"Zabudowa ({builtUpArea:N2} m²) przekracza maksymalną przyjętą powierzchnię ({maxBuildable:N2} m²) po odjęciu zieleni.");
+            warnings.Add("Po uwzględnieniu strefy 10 m od granicy nie zostaje obszar budowalny.");
+            ApplyZeros(ar);
+
+            return new AnalysisComputation
+            {
+                PlotWidthM = Round2(ar.PlotWidthM),
+                PlotLengthM = Round2(ar.PlotLengthM),
+                PlotAreaM2 = Round2(ar.PlotAreaM2),
+                BuildableWidthM = 0,
+                BuildableLengthM = 0,
+                BuildableAreaM2 = 0,
+                GreenAreaM2 = Round2(ar.PlotAreaM2 * assumptions.GreenPercent),
+                HardenedAreaM2 = 0,
+                MaxUsableForBuildingM2 = 0,
+                ModuleWidthM = Round2(ar.ModuleWidthM),
+                ModuleLengthM = Round2(ar.ModuleLengthM),
+                ModuleAreaM2 = Round2(ar.ModuleAreaM2),
+                ModuleCount = 0,
+                BuiltUpAreaM2 = 0,
+                BuiltUpPercent = 0,
+                CarParkingSpots = 0,
+                TruckParkingSpots = 0,
+                Warnings = warnings
+            };
         }
 
-        // 4) Procent zabudowy
-        var builtUpPercent = Round2((builtUpArea / input.PlotAreaM2) * 100m);
+        var buildableArea = buildableWidth * buildableLength;
 
-        // 5) Parkingi (MVP): 1 miejsce / 120 m² zabudowy (zaokr. w górę)
-        var parking = (int)Math.Ceiling((double)(builtUpArea / 120m));
-        if (parking < 1 && input.ModuleCount > 0) parking = 1;
+        // Zieleń (20–30%)
+        var greenArea = ar.PlotAreaM2 * assumptions.GreenPercent;
 
-        // 6) Ostrzeżenia heurystyczne
-        if (input.PlotAreaM2 < 3000m)
-            warnings.Add("Działka < 3000 m²: ryzyko ograniczeń logistycznych i manewrowych.");
+        // Utwardzenia:
+        // 1) korytarze drogowe: (droga + 2 chodniki) * długość przebiegu
+        var corridorWidth = assumptions.RoadWidthM + 2m * assumptions.SidewalkWidthM; // 5 + 3 = 8 m
 
-        if (builtUpPercent < 25m)
-            warnings.Add("Niska chłonność (zabudowa < 25%): możliwa słaba opłacalność inwestycji.");
+        // W MVP przyjmujemy, że korytarze biegną wzdłuż dłuższego boku obszaru budowalnego
+        var corridorRun = Math.Max(buildableWidth, buildableLength);
+        var corridorsArea = assumptions.RoadCorridorsCount * corridorWidth * corridorRun;
 
-        if (input.WetLand)
-            warnings.Add("Zaznaczono teren podmokły: możliwe koszty odwodnienia/wzmocnienia gruntu.");
+        // 2) trackout: 30m x długość budynku.
+        // Długość budynku w MVP ~ dłuższy bok obszaru budowalnego (bo hala zwykle "ciągnie się" wzdłuż dłuższej osi)
+        var buildingLengthApprox = corridorRun;
+        var trackoutArea = assumptions.TrackoutLengthM * buildingLengthApprox;
 
-        if (input.Archaeology)
-            warnings.Add("Zaznaczono archeologię: możliwe opóźnienia i koszty nadzoru archeologicznego.");
+        var hardenedRaw = corridorsArea + trackoutArea;
 
-        // 7) Etykieta opłacalności wg progów
-        var (label, comment) = ProfitabilityFromPercent(builtUpPercent);
+        // Redukcja utwardzeń dzięki geokratom
+        var hardenedReduced = hardenedRaw * (1m - assumptions.GeoGridsHardenedReduction);
 
-        return new AnalysisResult
+        // Maksymalna zabudowa ograniczona:
+        // - geometrią (obszar budowalny)
+        // - bilansem: działka - zieleń - utwardzenia
+        var usableByBalance = ar.PlotAreaM2 - greenArea - hardenedReduced;
+
+        var maxUsableForBuilding = MinNonNegative(buildableArea, usableByBalance);
+
+        if (usableByBalance < 0)
+            warnings.Add("Bilans ujemny: zieleń + utwardzenia przekraczają powierzchnię działki (dla przyjętych założeń).");
+
+        // Ile modułów wejdzie (liczymy z powierzchni, nie z count podanym przez usera)
+        var moduleCount = (int)Math.Floor((double)(maxUsableForBuilding / ar.ModuleAreaM2));
+        if (moduleCount < 0) moduleCount = 0;
+
+        var builtUpArea = moduleCount * ar.ModuleAreaM2;
+        var builtUpPercent = ar.PlotAreaM2 > 0 ? (builtUpArea / ar.PlotAreaM2) * 100m : 0m;
+
+        // Parking (MVP)
+        var carSpots = moduleCount * assumptions.CarSpotsPerModule;
+        var truckSpots = moduleCount >= assumptions.ModulesPerTruckSpot
+            ? (int)Math.Ceiling((double)moduleCount / assumptions.ModulesPerTruckSpot)
+            : 0;
+
+        // Ryzyka (MVP)
+        var archaeologyRisk = ar.PlotAreaM2 < 3000m;
+        var earthworksRisk = hardenedReduced > (ar.PlotAreaM2 * 0.20m);
+
+        // Ostrzeżenia biznesowe wg Twoich progów
+        if (moduleCount == 0)
+            warnings.Add("Wynik: 0 modułów. Zwiększ wymiary działki albo zmniejsz wymiary modułu / wymagania utwardzeń.");
+
+        if (builtUpPercent < 40m)
+            warnings.Add("Zabudowa < 40%: wg założeń opłacalność jest słaba.");
+
+        if (assumptions.GreenPercent is < 0.20m or > 0.30m)
+            warnings.Add("Zieleń poza typowym zakresem 20–30% (sprawdź założenia).");
+
+        // Aplikacja do encji
+        ar.GreenAreaM2 = Round2(greenArea);
+        ar.HardenedAreaM2 = Round2(hardenedReduced);
+        ar.BuiltUpPercent = Round2(builtUpPercent);
+        ar.CarParkingSpots = carSpots;
+        ar.TruckParkingSpots = truckSpots;
+        ar.HasArchaeologyRisk = archaeologyRisk;
+        ar.HasEarthworksRisk = earthworksRisk;
+
+        return new AnalysisComputation
         {
-            PlotAreaM2 = Round2(input.PlotAreaM2),
-            GreenRequiredM2 = greenRequired,
-            ModuleFootprintM2 = moduleFootprint,
-            BuiltUpAreaM2 = builtUpArea,
-            BuiltUpPercent = builtUpPercent,
-            ParkingSpacesRequired = parking,
-            ProfitabilityLabel = label,
-            ProfitabilityComment = comment,
+            PlotWidthM = Round2(ar.PlotWidthM),
+            PlotLengthM = Round2(ar.PlotLengthM),
+            PlotAreaM2 = Round2(ar.PlotAreaM2),
+
+            BuildableWidthM = Round2(buildableWidth),
+            BuildableLengthM = Round2(buildableLength),
+            BuildableAreaM2 = Round2(buildableArea),
+
+            GreenAreaM2 = Round2(greenArea),
+            HardenedAreaM2 = Round2(hardenedReduced),
+            MaxUsableForBuildingM2 = Round2(maxUsableForBuilding),
+
+            ModuleWidthM = Round2(ar.ModuleWidthM),
+            ModuleLengthM = Round2(ar.ModuleLengthM),
+            ModuleAreaM2 = Round2(ar.ModuleAreaM2),
+
+            ModuleCount = moduleCount,
+            BuiltUpAreaM2 = Round2(builtUpArea),
+            BuiltUpPercent = Round2(builtUpPercent),
+
+            CarParkingSpots = carSpots,
+            TruckParkingSpots = truckSpots,
             Warnings = warnings
         };
     }
 
-    private static void Validate(AnalysisInput input)
+    private static void ValidateInput(AnalysisRequest ar, AnalysisAssumptions a)
     {
-        if (input.PlotAreaM2 <= 0) throw new ArgumentOutOfRangeException(nameof(input.PlotAreaM2), "PlotAreaM2 musi być > 0.");
-        if (input.RequiredGreenPercent < 0m || input.RequiredGreenPercent > 1m)
-            throw new ArgumentOutOfRangeException(nameof(input.RequiredGreenPercent), "RequiredGreenPercent musi być w zakresie 0..1.");
-        if (input.ModuleCount < 0) throw new ArgumentOutOfRangeException(nameof(input.ModuleCount), "ModuleCount nie może być ujemny.");
-        if (input.ModuleWidthM <= 0 || input.ModuleLengthM <= 0)
-            throw new ArgumentOutOfRangeException("Wymiary modułu muszą być > 0.");
+        // Działka
+        if (ar.PlotWidthM <= 0) throw new ArgumentOutOfRangeException(nameof(ar.PlotWidthM), "PlotWidthM musi być > 0.");
+        if (ar.PlotLengthM <= 0) throw new ArgumentOutOfRangeException(nameof(ar.PlotLengthM), "PlotLengthM musi być > 0.");
+
+        // Moduł
+        if (ar.ModuleWidthM <= 0) throw new ArgumentOutOfRangeException(nameof(ar.ModuleWidthM), "ModuleWidthM musi być > 0.");
+        if (ar.ModuleLengthM <= 0) throw new ArgumentOutOfRangeException(nameof(ar.ModuleLengthM), "ModuleLengthM musi być > 0.");
+
+        // Założenia
+        if (a.GreenPercent < 0.20m || a.GreenPercent > 0.30m)
+            throw new ArgumentOutOfRangeException(nameof(a.GreenPercent), "GreenPercent w MVP powinno być w zakresie 0.20–0.30.");
+
+        if (a.GeoGridsHardenedReduction < 0m || a.GeoGridsHardenedReduction > 1m)
+            throw new ArgumentOutOfRangeException(nameof(a.GeoGridsHardenedReduction), "GeoGridsHardenedReduction musi być w zakresie 0..1.");
+
+        if (a.RoadCorridorsCount < 0 || a.RoadCorridorsCount > 10)
+            throw new ArgumentOutOfRangeException(nameof(a.RoadCorridorsCount), "RoadCorridorsCount ma niepoprawną wartość.");
+
+        // Setback nie może "zjeść" działki
+        if (2m * a.SetbackFromBorderM >= ar.PlotWidthM || 2m * a.SetbackFromBorderM >= ar.PlotLengthM)
+            throw new ArgumentOutOfRangeException(nameof(a.SetbackFromBorderM), "Setback jest zbyt duży względem wymiarów działki.");
     }
 
-    private static (string label, string comment) ProfitabilityFromPercent(decimal builtUpPercent)
+    private static void ApplyZeros(AnalysisRequest ar)
     {
-        if (builtUpPercent >= 40m)
-            return ("Opłacalna", "Zabudowa >= 40%: parametry wskazują na dobrą chłonność działki.");
-        if (builtUpPercent >= 30m)
-            return ("Ryzyko", "Zabudowa 30–40%: możliwa opłacalność, ale warto zweryfikować koszty i ograniczenia.");
-        return ("Nieopłacalna", "Zabudowa < 30%: parametry sugerują niską chłonność i ryzyko słabej rentowności.");
+        ar.BuiltUpPercent = 0m;
+        ar.GreenAreaM2 = null;
+        ar.HardenedAreaM2 = 0m;
+        ar.CarParkingSpots = 0;
+        ar.TruckParkingSpots = 0;
+        ar.HasArchaeologyRisk = true;
+        ar.HasEarthworksRisk = false;
+    }
+
+    private static decimal MinNonNegative(decimal a, decimal b)
+    {
+        var m = Math.Min(a, b);
+        return m < 0 ? 0 : m;
     }
 
     private static decimal Round2(decimal v) => Math.Round(v, 2, MidpointRounding.AwayFromZero);
