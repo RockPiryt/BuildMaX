@@ -8,8 +8,8 @@ namespace BuildMaX.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _users;
-        private readonly SignInManager<ApplicationUser> _signIn;
+        private readonly UserManager<ApplicationUser> _users; //(tworzenie użytkownika, role)
+        private readonly SignInManager<ApplicationUser> _signIn; //(logowanie/wylogowanie)
 
         public AccountController(UserManager<ApplicationUser> users, SignInManager<ApplicationUser> signIn)
         {
@@ -20,7 +20,7 @@ namespace BuildMaX.Web.Controllers
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register() => View();
-
+        // dane z formularza RegisterViewModel
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -42,7 +42,7 @@ namespace BuildMaX.Web.Controllers
                 // domyślnie rola Client, To powoduje: Wstawienie wpisu do tabeli AspNetUserRoles, Połączenie UserId ↔ RoleId roli Client
                 await _users.AddToRoleAsync(user, "Client");
 
-                await _signIn.SignInAsync(user, isPersistent: false);
+                await _signIn.SignInAsync(user, isPersistent: false); // Autologin:Tworzy cookie jak przy logowaniu.
                 return RedirectToAction("Index", "Home");
             }
 
@@ -69,6 +69,7 @@ namespace BuildMaX.Web.Controllers
             if (!ModelState.IsValid) return View(vm);
 
             // PasswordSignInAsync	Waliduje login i hasło, vm.Email- Login użytkownika, vm.Password-Hasło w formie jawnej które następnie hashuje aby porównać z hashem z db, RememberMe	Cookie trwałe, lockoutOnFailure	Brak blokady konta
+            // _signIn.PasswordSignInAsyncsprawdza hash z DB
             var result = await _signIn.PasswordSignInAsync(
                 vm.Email, vm.Password, vm.RememberMe, lockoutOnFailure: false);
 

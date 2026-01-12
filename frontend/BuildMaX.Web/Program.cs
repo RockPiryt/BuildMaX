@@ -53,13 +53,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 // Middleware (kolejność ma znaczenie!), Definiuje jak każde żądanie HTTP jest obsługiwane.
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseHttpsRedirection(); //Jeśli ktoś wejdzie przez http://, przekieruje na https://.
+app.UseStaticFiles(); //Obsługuje pliki statyczne: .css, .js, .png.Bez tego strona byłaby bez stylów.
 
-app.UseRouting();
+app.UseRouting();// Analizuje URL i ustala który kontroler i akcja ma obsłużyć żądanie.
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication();//Sprawdza czy użytkownik jest zalogowany (odczytuje cookie sesji).
+app.UseAuthorization(); //Sprawdza czy użytkownik ma dostęp (role, polityki).
 
 
 //Definiuje standardowy adres URL.
