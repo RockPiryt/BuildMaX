@@ -34,11 +34,12 @@ namespace BuildMaX.Web.Controllers
                 Email = vm.Email
             };
 
+            // ASP.NET Identity:, Hashuje hasło (domyślnie PBKDF2 / bcrypt zależnie od wersji)., Zapisuje do tabeli AspNetUsers.PasswordHash.
             var result = await _users.CreateAsync(user, vm.Password);
 
             if (result.Succeeded)
             {
-                // domyślnie rola Client
+                // domyślnie rola Client, To powoduje: Wstawienie wpisu do tabeli AspNetUserRoles, Połączenie UserId ↔ RoleId roli Client
                 await _users.AddToRoleAsync(user, "Client");
 
                 await _signIn.SignInAsync(user, isPersistent: false);
@@ -51,6 +52,7 @@ namespace BuildMaX.Web.Controllers
             return View(vm);
         }
 
+        // Wyświetla formularz logowania (Login.cshtml). returnUrl przechowuje adres, na który użytkownik zostanie przekierowany po zalogowaniu.
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login(string? returnUrl = null)
@@ -66,6 +68,7 @@ namespace BuildMaX.Web.Controllers
         {
             if (!ModelState.IsValid) return View(vm);
 
+            // PasswordSignInAsync	Waliduje login i hasło, vm.Email- Login użytkownika, vm.Password-Hasło w formie jawnej które następnie hashuje aby porównać z hashem z db, RememberMe	Cookie trwałe, lockoutOnFailure	Brak blokady konta
             var result = await _signIn.PasswordSignInAsync(
                 vm.Email, vm.Password, vm.RememberMe, lockoutOnFailure: false);
 
