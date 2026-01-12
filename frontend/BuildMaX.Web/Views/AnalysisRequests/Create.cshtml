@@ -1,4 +1,5 @@
 @model BuildMaX.Web.Models.Domain.AnalysisRequest
+@using BuildMaX.Web.Models.Domain.Enums
 
 @{
     ViewData["Title"] = "Nowa analiza";
@@ -6,7 +7,7 @@
 
 <h1>Nowa analiza</h1>
 
-<div class="card">
+<div class="card p-3">
     <div class="mb-3">
         <strong>Wybrany wariant:</strong>
         @if (Model.Variant != null)
@@ -19,17 +20,100 @@
         }
     </div>
 
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" id="createForm">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <!-- Wariant jest przekazany z Pricing i nieedytowalny -->
         <input type="hidden" asp-for="VariantId" />
 
+        <!-- To pole jest REQUIRED w encji, ale użytkownik nie wpisuje go ręcznie -->
+        <input type="hidden" asp-for="Address" id="AddressCombined" />
+
+        <h3 class="mt-2">Identyfikacja lokalizacji</h3>
+
         <div class="mb-3">
-            <label asp-for="Address" class="form-label"></label>
-            <input asp-for="Address" class="form-control" />
-            <span asp-validation-for="Address" class="text-danger"></span>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input"
+                       type="radio"
+                       name="AddressKind"
+                       id="modeAddress"
+                       value="@((int)AddressKind.Address)"
+                       @(Model.AddressKind == AddressKind.Plot ? "" : "checked") />
+                <label class="form-check-label" for="modeAddress">Adres</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input class="form-check-input"
+                       type="radio"
+                       name="AddressKind"
+                       id="modePlot"
+                       value="@((int)AddressKind.Plot)"
+                       @(Model.AddressKind == AddressKind.Plot ? "checked" : "") />
+                <label class="form-check-label" for="modePlot">Działka</label>
+            </div>
+
+            <div class="form-text">
+                Jeśli masz tylko numer działki – wybierz tryb „Działka”. Pola ulicy i numeru nie są wtedy wymagane.
+            </div>
+        </div>
+
+        <div id="addressBlock">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Country" class="form-label"></label>
+                    <input asp-for="Country" class="form-control" placeholder="np. Polska" />
+                    <span asp-validation-for="Country" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="City" class="form-label"></label>
+                    <input asp-for="City" class="form-control" placeholder="np. Gdańsk" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="PostalCode" class="form-label"></label>
+                    <input asp-for="PostalCode" class="form-control" placeholder="np. 80-001 (opcjonalnie)" />
+                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label asp-for="Street" class="form-label"></label>
+                    <input asp-for="Street" class="form-control" placeholder="np. Rakoczego (opcjonalnie)" />
+                    <span asp-validation-for="Street" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="StreetNumber" class="form-label"></label>
+                    <input asp-for="StreetNumber" class="form-control" placeholder="np. 12A (opcjonalnie)" />
+                    <span asp-validation-for="StreetNumber" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="plotBlock" class="d-none">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="PlotNumber" class="form-label"></label>
+                    <input asp-for="PlotNumber" class="form-control" placeholder="np. 123/4" />
+                    <span asp-validation-for="PlotNumber" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="CadastralArea" class="form-label"></label>
+                    <input asp-for="CadastralArea" class="form-control" placeholder="np. obręb 0012 (opcjonalnie)" />
+                    <span asp-validation-for="CadastralArea" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Commune" class="form-label"></label>
+                    <input asp-for="Commune" class="form-control" placeholder="np. gmina Pruszcz Gdański (opcjonalnie)" />
+                    <span asp-validation-for="Commune" class="text-danger"></span>
+                </div>
+            </div>
         </div>
 
         <hr />
@@ -71,4 +155,91 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const modeAddress = document.getElementById('modeAddress');
+            const modePlot = document.getElementById('modePlot');
+            const addressBlock = document.getElementById('addressBlock');
+            const plotBlock = document.getElementById('plotBlock');
+
+            const country = document.getElementById('Country');
+            const city = document.getElementById('City');
+            const postal = document.getElementById('PostalCode');
+            const street = document.getElementById('Street');
+            const streetNo = document.getElementById('StreetNumber');
+
+            const plotNo = document.getElementById('PlotNumber');
+            const cadastral = document.getElementById('CadastralArea');
+            const commune = document.getElementById('Commune');
+
+            const addressCombined = document.getElementById('AddressCombined');
+            const form = document.getElementById('createForm');
+
+            function isPlotMode() {
+                return modePlot && modePlot.checked;
+            }
+
+            function toggleBlocks() {
+                if (isPlotMode()) {
+                    addressBlock.classList.add('d-none');
+                    plotBlock.classList.remove('d-none');
+                } else {
+                    plotBlock.classList.add('d-none');
+                    addressBlock.classList.remove('d-none');
+                }
+                buildCombinedAddress();
+            }
+
+            function safe(v) { return (v || '').trim(); }
+
+            function buildCombinedAddress() {
+                if (isPlotMode()) {
+                    let parts = [];
+                    const pn = safe(plotNo?.value);
+                    if (pn) parts.push(`Działka ${pn}`);
+                    const ca = safe(cadastral?.value);
+                    if (ca) parts.push(`obręb ${ca}`);
+                    const co = safe(commune?.value);
+                    if (co) parts.push(`gmina ${co}`);
+                    const c = safe(city?.value);
+                    if (c) parts.push(c);
+                    const k = safe(country?.value);
+                    if (k) parts.push(k);
+
+                    addressCombined.value = parts.length ? parts.join(', ') : '';
+                } else {
+                    let parts = [];
+                    const st = safe(street?.value);
+                    const sn = safe(streetNo?.value);
+                    if (st) parts.push(sn ? `${st} ${sn}` : st);
+
+                    const pc = safe(postal?.value);
+                    const ci = safe(city?.value);
+                    if (ci) parts.push(pc ? `${pc} ${ci}` : ci);
+
+                    const k = safe(country?.value);
+                    if (k) parts.push(k);
+
+                    addressCombined.value = parts.length ? parts.join(', ') : '';
+                }
+            }
+
+            // events
+            modeAddress?.addEventListener('change', toggleBlocks);
+            modePlot?.addEventListener('change', toggleBlocks);
+
+            [country, city, postal, street, streetNo, plotNo, cadastral, commune].forEach(el => {
+                el?.addEventListener('input', buildCombinedAddress);
+            });
+
+            // przed wysłaniem upewnij się, że Address nie jest puste ([Required])
+            form?.addEventListener('submit', function () {
+                buildCombinedAddress();
+            });
+
+            // initial
+            toggleBlocks();
+        })();
+    </script>
 }

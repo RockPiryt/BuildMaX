@@ -20,8 +20,48 @@ namespace BuildMaX.Web.Models.Domain
         [Display(Name = "Wariant")]
         public int VariantId { get; set; }
 
-        public Variant Variant { get; set; } = null!;
+        public Variant? Variant { get; set; }
 
+        // ====== ADDRESS MODE ======
+        [Required]
+        [Display(Name = "Tryb adresu")]
+        public AddressKind AddressKind { get; set; } = AddressKind.Address;
+
+        // ====== ADDRESS FIELDS (for filtering later) ======
+        [StringLength(100)]
+        [Display(Name = "Kraj")]
+        public string? Country { get; set; }
+
+        [StringLength(120)]
+        [Display(Name = "Miasto")]
+        public string? City { get; set; }
+
+        [StringLength(20)]
+        [Display(Name = "Kod pocztowy")]
+        public string? PostalCode { get; set; }
+
+        [StringLength(160)]
+        [Display(Name = "Ulica")]
+        public string? Street { get; set; }
+
+        [StringLength(30)]
+        [Display(Name = "Numer")]
+        public string? StreetNumber { get; set; }
+
+        // Działka (gdy brak adresu ulicznego)
+        [StringLength(60)]
+        [Display(Name = "Numer działki")]
+        public string? PlotNumber { get; set; }
+
+        [StringLength(120)]
+        [Display(Name = "Obręb")]
+        public string? CadastralArea { get; set; }
+
+        [StringLength(120)]
+        [Display(Name = "Gmina")]
+        public string? Commune { get; set; }
+
+        // Pole do wyświetlania (możesz zostawić na teraz)
         [Required]
         [StringLength(250)]
         [Display(Name = "Adres działki")]
@@ -108,4 +148,5 @@ namespace BuildMaX.Web.Models.Domain
         [Display(Name = "Data utworzenia")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
+
 }

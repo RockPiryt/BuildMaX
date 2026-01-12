@@ -2,6 +2,7 @@ using System.Security.Claims;
 using BuildMaX.Web.Data;
 using BuildMaX.Web.Models.Domain;
 using BuildMaX.Web.Models.Domain.Enums;
+using BuildMaX.Web.Models.ViewModels.Analysis;
 using BuildMaX.Web.Services.Analysis;
 using BuildMaX.Web.Services.Documents;
 using Microsoft.AspNetCore.Authorization;
@@ -25,11 +26,11 @@ namespace BuildMaX.Web.Controllers
         }
 
         // LISTA: User widzi swoje; Admin/Analyst widzą wszystko
-        public async Task<IActionResult> Index(AnalysisStatus? status, string? q)
+        public async Task<IActionResult> Index(AnalysisStatus? status, string? q, string? city)
         {
             var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // włąsne l;inq , metoda łancuhowa
+
             var query = _db.AnalysisRequests
                 .AsNoTracking()
                 .Include(a => a.Variant)
@@ -45,12 +46,16 @@ namespace BuildMaX.Web.Controllers
             if (!string.IsNullOrWhiteSpace(q))
                 query = query.Where(a => a.Address.Contains(q));
 
+            if (!string.IsNullOrWhiteSpace(city))
+                query = query.Where(a => a.City != null && a.City.Contains(city));
+
             var data = await query
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
             ViewData["SelectedStatus"] = status;
             ViewData["Query"] = q;
+            ViewData["City"] = city;
 
             return View(data);
         }
@@ -74,6 +79,7 @@ namespace BuildMaX.Web.Controllers
 
         // CREATE: wariant jest już kliknięty (Pricing -> Create?variantId=...)
         [Authorize(Roles = "Client,Admin")]
+        [HttpGet]
         public async Task<IActionResult> Create(int variantId)
         {
             var variant = await _db.Variants
@@ -82,38 +88,64 @@ namespace BuildMaX.Web.Controllers
 
             if (variant is null) return NotFound();
 
-            var ar = new AnalysisRequest
+            ViewBag.VariantName = variant.Name;
+
+            var vm = new CreateAnalysisRequestViewModel
             {
-                VariantId = variant.VariantId,
-                Variant = variant
+                VariantId = variantId,
+                AddressKind = AddressKind.Address
             };
 
-            return View(ar);
+            return View(vm);
         }
 
-        // CREATE POST: user podaje tylko wymiary + adres, wariant jest hidden
+        // CREATE POST: user podaje wymiary + rozbity adres
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Client,Admin")]
-        public async Task<IActionResult> Create([Bind("VariantId,Address,PlotWidthM,PlotLengthM,ModuleWidthM,ModuleLengthM")] AnalysisRequest ar)
+        public async Task<IActionResult> Create([Bind(
+            "VariantId,AddressKind,Country,City,PostalCode,Street,StreetNumber,PlotNumber,CadastralArea,Commune," +
+            "PlotWidthM,PlotLengthM,ModuleWidthM,ModuleLengthM"
+        )] AnalysisRequest ar)
         {
-            // walidacja bezpieczeństwa: czy wariant istnieje
-            var variant = await _db.Variants.AsNoTracking().FirstOrDefaultAsync(v => v.VariantId == ar.VariantId);
+            ar.ApplicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
+            var variant = await _db.Variants
+                .AsNoTracking()
+                .FirstOrDefaultAsync(v => v.VariantId == ar.VariantId);
+
             if (variant is null)
                 ModelState.AddModelError(nameof(ar.VariantId), "Wybrany wariant nie istnieje.");
 
+            // Walidacja zależna od trybu
+            if (ar.AddressKind == AddressKind.Address)
+            {
+                if (string.IsNullOrWhiteSpace(ar.City))
+                    ModelState.AddModelError(nameof(ar.City), "Miasto jest wymagane.");
+            }
+            else // Plot
+            {
+                if (string.IsNullOrWhiteSpace(ar.PlotNumber))
+                    ModelState.AddModelError(nameof(ar.PlotNumber), "Numer działki jest wymagany.");
+            }
+
+            // Składamy Address (bo masz [Required] w encji)
+            ar.Address = BuildDisplayAddress(ar);
+
+            // Usuwamy walidację pól systemowych, których nie ma w formularzu
+            ModelState.Remove(nameof(AnalysisRequest.ApplicationUserId));
+            ModelState.Remove(nameof(AnalysisRequest.ApplicationUser));
+            ModelState.Remove(nameof(AnalysisRequest.Variant));
+
             if (!ModelState.IsValid)
             {
-                // żeby widok mógł wyświetlić nazwę wariantu
                 ar.Variant = variant!;
                 return View(ar);
             }
 
-            ar.ApplicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             ar.Status = AnalysisStatus.New;
             ar.CreatedAt = DateTime.UtcNow;
 
-            // policz pola wyliczane
             _calc.ComputeAndApply(ar, new AnalysisAssumptions
             {
                 GreenPercent = 0.25m,
@@ -125,6 +157,7 @@ namespace BuildMaX.Web.Controllers
 
             return RedirectToAction(nameof(Details), new { id = ar.AnalysisRequestId });
         }
+
 
         // EDIT GET: Admin/Analyst
         [Authorize(Roles = "Admin,Analyst")]
@@ -142,7 +175,7 @@ namespace BuildMaX.Web.Controllers
         }
 
         // EDIT POST:
-        // - Analyst: tylko status + pola wynikowe/ryzyka (jak było)
+        // - Analyst: tylko status + pola wynikowe/ryzyka
         // - Admin: może zmienić wejście (wymiary) i wtedy robimy auto-przeliczenie
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -176,16 +209,26 @@ namespace BuildMaX.Web.Controllers
 
             // ADMIN
             if (!ModelState.IsValid)
-            {
                 return View(input);
-            }
 
             // Admin zmienia wejście
-            ar.Address = input.Address;
             ar.PlotWidthM = input.PlotWidthM;
             ar.PlotLengthM = input.PlotLengthM;
             ar.ModuleWidthM = input.ModuleWidthM;
             ar.ModuleLengthM = input.ModuleLengthM;
+
+            // Admin może też poprawić adres (tekst) lub rozbite pola – zależnie jak masz widok Edit
+            ar.AddressKind = input.AddressKind;
+            ar.Country = input.Country;
+            ar.City = input.City;
+            ar.PostalCode = input.PostalCode;
+            ar.Street = input.Street;
+            ar.StreetNumber = input.StreetNumber;
+            ar.PlotNumber = input.PlotNumber;
+            ar.CadastralArea = input.CadastralArea;
+            ar.Commune = input.Commune;
+
+            ar.Address = BuildDisplayAddress(ar);
 
             // opcjonalnie: admin może też zmienić status
             ar.Status = input.Status;
@@ -292,6 +335,29 @@ namespace BuildMaX.Web.Controllers
             return View(vm);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GeneratePdf(int id)
+        {
+            var ar = await _db.AnalysisRequests
+                .Include(a => a.Variant)
+                .Include(a => a.ApplicationUser)
+                .FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
+
+            if (ar is null) return NotFound();
+            if (!CanAccess(ar)) return Forbid();
+
+            var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
+            if (!isAdminOrAnalyst && ar.Variant != null && !ar.Variant.IncludesPdf)
+                return Forbid();
+
+            var computation = _calc.ComputeAndApply(ar);
+
+            var bytes = _pdf.GenerateAnalysisRequestReport(ar, ar.Variant!, computation);
+            var fileName = $"raport-analizy-{ar.AnalysisRequestId}.pdf";
+
+            return File(bytes, "application/pdf", fileName);
+        }
+
         // ---- helpers ----
 
         private bool CanAccess(AnalysisRequest ar)
@@ -301,6 +367,43 @@ namespace BuildMaX.Web.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return ar.ApplicationUserId == userId;
+        }
+
+        private static string BuildDisplayAddress(AnalysisRequest ar)
+        {
+            // Działka
+            if (ar.AddressKind == AddressKind.Plot)
+            {
+                var s = $"Działka {ar.PlotNumber}";
+                if (!string.IsNullOrWhiteSpace(ar.CadastralArea)) s += $", obręb {ar.CadastralArea}";
+                if (!string.IsNullOrWhiteSpace(ar.Commune)) s += $", gmina {ar.Commune}";
+                if (!string.IsNullOrWhiteSpace(ar.City)) s += $", {ar.City}";
+                if (!string.IsNullOrWhiteSpace(ar.Country)) s += $", {ar.Country}";
+                return s;
+            }
+
+            // Adres
+            var parts = new List<string>();
+
+            var streetPart = (ar.Street ?? "").Trim();
+            var nrPart = (ar.StreetNumber ?? "").Trim();
+            if (!string.IsNullOrWhiteSpace(streetPart))
+                parts.Add(string.IsNullOrWhiteSpace(nrPart) ? streetPart : $"{streetPart} {nrPart}");
+
+            var cityPart = (ar.City ?? "").Trim();
+            var postalPart = (ar.PostalCode ?? "").Trim();
+            if (!string.IsNullOrWhiteSpace(cityPart))
+                parts.Add(string.IsNullOrWhiteSpace(postalPart) ? cityPart : $"{postalPart} {cityPart}");
+
+            var countryPart = (ar.Country ?? "").Trim();
+            if (!string.IsNullOrWhiteSpace(countryPart))
+                parts.Add(countryPart);
+
+            // fallback — żeby Required na Address nie wywalał zapisu
+            if (parts.Count == 0)
+                return "—";
+
+            return string.Join(", ", parts);
         }
 
         // proste VM do dashboardu
@@ -328,15 +431,15 @@ namespace BuildMaX.Web.Controllers
             if (ar is null) return NotFound();
             if (!CanAccess(ar)) return Forbid();
 
-            // User może pobrać PDF tylko jeśli wariant to przewiduje (opcjonalne)
             var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
-            if (!isAdminOrAnalyst && !ar.Variant.IncludesPdf)
-                return Forbid();
 
+            // jeśli Variant nie załadował się (nie powinno, ale lepiej bezpiecznie)
+            if (!isAdminOrAnalyst && (ar.Variant is null || !ar.Variant.IncludesPdf))
+                return Forbid();
             // Dolicz wyniki jeśli potrzeba
             var computation = _calc.ComputeAndApply(ar);
 
-            var bytes = _pdf.GenerateAnalysisRequestReport(ar, ar.Variant, computation);
+            var bytes = _pdf.GenerateAnalysisRequestReport(ar, ar.Variant!, computation);
             var fileName = $"raport-analizy-{ar.AnalysisRequestId}.pdf";
 
             return File(bytes, "application/pdf", fileName);
