@@ -56,7 +56,7 @@
 
     <a asp-action="Edit" asp-route-id="@Model.AnalysisRequestId">Edytuj</a> |
     <a asp-action="Index">Wróć</a>
-    @if (User.IsInRole("Admin") || User.IsInRole("Analyst") || Model.Variant.IncludesPdf)
+    @if (User.IsInRole("Admin") || User.IsInRole("Analyst") || (Model.Variant?.IncludesPdf ?? false))
     {
         <a asp-action="GeneratePdf" asp-route-id="@Model.AnalysisRequestId" class="btn btn-outline-primary">
             Pobierz PDF

@@ -29,7 +29,7 @@ namespace BuildMaX.Web.Controllers
         {
             var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            // włąsne l;inq , metoda łancuhowa
             var query = _db.AnalysisRequests
                 .AsNoTracking()
                 .Include(a => a.Variant)
@@ -73,7 +73,7 @@ namespace BuildMaX.Web.Controllers
         }
 
         // CREATE: wariant jest już kliknięty (Pricing -> Create?variantId=...)
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Client,Admin")]
         public async Task<IActionResult> Create(int variantId)
         {
             var variant = await _db.Variants
@@ -94,7 +94,7 @@ namespace BuildMaX.Web.Controllers
         // CREATE POST: user podaje tylko wymiary + adres, wariant jest hidden
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Client,Admin")]
         public async Task<IActionResult> Create([Bind("VariantId,Address,PlotWidthM,PlotLengthM,ModuleWidthM,ModuleLengthM")] AnalysisRequest ar)
         {
             // walidacja bezpieczeństwa: czy wariant istnieje

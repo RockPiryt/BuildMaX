@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using BuildMaX.Web.Models.Domain;
 using BuildMaX.Web.Services.Analysis;
 using QuestPDF.Fluent;
@@ -103,13 +105,15 @@ public sealed class PdfReportService : IPdfReportService
                     }
                 });
 
-                page.Footer().AlignCenter().Text(x =>
+                page.Footer().AlignCenter().Text(t =>
                 {
-                    x.Span("BuildMaX – raport | strona ");
-                    x.CurrentPageNumber();
-                    x.Span(" / ");
-                    x.TotalPages();
-                }).FontSize(9).FontColor(Colors.Grey.Darken2);
+                    t.DefaultTextStyle(x => x.FontSize(9).FontColor(Colors.Grey.Darken2));
+
+                    t.Span("BuildMaX – raport | strona ");
+                    t.CurrentPageNumber();
+                    t.Span(" / ");
+                    t.TotalPages();
+                });
             });
         });
 
@@ -145,8 +149,17 @@ public sealed class PdfReportService : IPdfReportService
         if (p is null) return 0m;
 
         var val = p.GetValue(obj);
+        if (val is null) return 0m;
+
+        // Obsłuż decimal
         if (val is decimal d) return d;
+
+        // Obsłuż decimal? bez używania wzorca "is decimal? x"
+        var t = Nullable.GetUnderlyingType(val.GetType());
+        if (t == typeof(decimal))
+            return (decimal)val;
 
         return 0m;
     }
+
 }
