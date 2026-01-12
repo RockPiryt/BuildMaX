@@ -19,13 +19,19 @@ namespace BuildMaX.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register() => View();
+        public IActionResult Register(string? returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
         // dane z formularza RegisterViewModel
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel vm)
+        public async Task<IActionResult> Register(RegisterViewModel vm, string? returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
+
             if (!ModelState.IsValid) return View(vm);
 
             var user = new ApplicationUser
@@ -41,8 +47,11 @@ namespace BuildMaX.Web.Controllers
             {
                 // domyślnie rola Client, To powoduje: Wstawienie wpisu do tabeli AspNetUserRoles, Połączenie UserId ↔ RoleId roli Client
                 await _users.AddToRoleAsync(user, "Client");
+                await _signIn.SignInAsync(user, isPersistent: false);
 
-                await _signIn.SignInAsync(user, isPersistent: false); // Autologin:Tworzy cookie jak przy logowaniu.
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
                 return RedirectToAction("Index", "Home");
             }
 
@@ -51,6 +60,7 @@ namespace BuildMaX.Web.Controllers
 
             return View(vm);
         }
+
 
         // Wyświetla formularz logowania (Login.cshtml). returnUrl przechowuje adres, na który użytkownik zostanie przekierowany po zalogowaniu.
         [HttpGet]
@@ -66,6 +76,8 @@ namespace BuildMaX.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel vm, string? returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
+
             if (!ModelState.IsValid) return View(vm);
 
             // PasswordSignInAsync	Waliduje login i hasło, vm.Email- Login użytkownika, vm.Password-Hasło w formie jawnej które następnie hashuje aby porównać z hashem z db, RememberMe	Cookie trwałe, lockoutOnFailure	Brak blokady konta
@@ -84,6 +96,7 @@ namespace BuildMaX.Web.Controllers
             ModelState.AddModelError(string.Empty, "Nieprawidłowy login lub hasło.");
             return View(vm);
         }
+
 
         [HttpPost]
         [Authorize]

@@ -62,9 +62,28 @@
                                 }
                             </ul>
 
-                            <a class="@ButtonClass(v)" asp-controller="Account" asp-action="Register">
-                                Wybierz wariant
-                            </a>
+                            @{
+                                var createUrl = Url.Action("Create", "AnalysisRequests", new { variantId = v.VariantId });
+                            }
+
+                            @if (User?.Identity?.IsAuthenticated ?? false)
+                            {
+                                <a class="@ButtonClass(v)"
+                                asp-controller="AnalysisRequests"
+                                asp-action="Create"
+                                asp-route-variantId="@v.VariantId">
+                                    Wybierz wariant
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="@ButtonClass(v)"
+                                asp-controller="Account"
+                                asp-action="Login"
+                                asp-route-returnUrl="@createUrl">
+                                    Wybierz wariant
+                                </a>
+                            }
                         </div>
                     </div>
                 </div>

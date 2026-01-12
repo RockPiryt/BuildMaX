@@ -13,9 +13,15 @@
             </p>
 
             <div class="d-flex flex-wrap gap-2 mt-3">
-                <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Pricing">Zobacz warianty</a>
-                <a class="btn btn-outline-primary btn-lg" asp-controller="Account" asp-action="Register">Załóż konto</a>
-                <a class="btn btn-link btn-lg" asp-controller="Account" asp-action="Login">Zaloguj</a>
+                @if (User?.Identity?.IsAuthenticated ?? false)
+                {
+                    <a class="btn btn-primary" asp-controller="Home" asp-action="Pricing">Zobacz warianty</a>
+                }
+                else
+                {
+                    <a class="btn btn-outline-light" asp-controller="Account" asp-action="Register">Załóż konto</a>
+                    <a class="btn btn-link" asp-controller="Account" asp-action="Login">Zaloguj</a>
+                }
             </div>
 
             <div class="row g-3 mt-4">

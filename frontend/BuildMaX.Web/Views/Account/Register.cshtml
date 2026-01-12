@@ -3,10 +3,14 @@
     ViewData["Title"] = "Rejestracja";
 }
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
 <h2>Rejestracja</h2>
 
 <div class="card">
-    <form asp-action="Register" method="post">
+    <form asp-action="Register" method="post" asp-route-returnUrl="@ViewBag.ReturnUrl">
         @Html.AntiForgeryToken()
 
         <div asp-validation-summary="All"></div>
@@ -19,14 +23,14 @@
 
         <div>
             <label asp-for="Password"></label>
-            <input asp-for="Password" />
+            <input asp-for="Password" type="password"/>
             <span asp-validation-for="Password"></span>
         </div>
 
         <div>
             <label asp-for="ConfirmPassword"></label>
-            <input asp-for="ConfirmPassword" />
-            <span asp-validation-for="ConfirmPassword"></span>
+            <input asp-for="ConfirmPassword" type="password"/>
+            <span asp-validation-for="ConfirmPassword" ></span>
         </div>
 
         <button type="submit">Zarejestruj</button>

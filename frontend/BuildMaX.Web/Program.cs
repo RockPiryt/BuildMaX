@@ -55,17 +55,15 @@ if (!app.Environment.IsDevelopment())
 // Middleware (kolejność ma znaczenie!), Definiuje jak każde żądanie HTTP jest obsługiwane.
 app.UseHttpsRedirection(); //Jeśli ktoś wejdzie przez http://, przekieruje na https://.
 app.UseStaticFiles(); //Obsługuje pliki statyczne: .css, .js, .png.Bez tego strona byłaby bez stylów.
-
 app.UseRouting();// Analizuje URL i ustala który kontroler i akcja ma obsłużyć żądanie.
-
 app.UseAuthentication();//Sprawdza czy użytkownik jest zalogowany (odczytuje cookie sesji).
 app.UseAuthorization(); //Sprawdza czy użytkownik ma dostęp (role, polityki).
-
-
 //Definiuje standardowy adres URL.
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 //Seed danych startowych
 await DbSeeder.SeedAsync(app.Services);
 
