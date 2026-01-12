@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using BuildMaX.Web.Models.Domain;
+using BuildMaX.Web.Models.Domain.Enums;
+
 
 namespace BuildMaX.Web.Models.ViewModels.Analysis
 {

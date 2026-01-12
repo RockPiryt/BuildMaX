@@ -335,29 +335,7 @@ namespace BuildMaX.Web.Controllers
             return View(vm);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GeneratePdf(int id)
-        {
-            var ar = await _db.AnalysisRequests
-                .Include(a => a.Variant)
-                .Include(a => a.ApplicationUser)
-                .FirstOrDefaultAsync(a => a.AnalysisRequestId == id);
-
-            if (ar is null) return NotFound();
-            if (!CanAccess(ar)) return Forbid();
-
-            var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
-            if (!isAdminOrAnalyst && ar.Variant != null && !ar.Variant.IncludesPdf)
-                return Forbid();
-
-            var computation = _calc.ComputeAndApply(ar);
-
-            var bytes = _pdf.GenerateAnalysisRequestReport(ar, ar.Variant!, computation);
-            var fileName = $"raport-analizy-{ar.AnalysisRequestId}.pdf";
-
-            return File(bytes, "application/pdf", fileName);
-        }
-
+        
         // ---- helpers ----
 
         private bool CanAccess(AnalysisRequest ar)
