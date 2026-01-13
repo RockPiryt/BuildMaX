@@ -103,48 +103,65 @@ namespace BuildMaX.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Client,Admin")]
-        public async Task<IActionResult> Create([Bind(
-            "VariantId,AddressKind,Country,City,PostalCode,Street,StreetNumber,PlotNumber,CadastralArea,Commune," +
-            "PlotWidthM,PlotLengthM,ModuleWidthM,ModuleLengthM"
-        )] AnalysisRequest ar)
+        public async Task<IActionResult> Create(CreateAnalysisRequestViewModel vm)
         {
-            ar.ApplicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
             var variant = await _db.Variants
                 .AsNoTracking()
-                .FirstOrDefaultAsync(v => v.VariantId == ar.VariantId);
+                .FirstOrDefaultAsync(v => v.VariantId == vm.VariantId);
 
             if (variant is null)
-                ModelState.AddModelError(nameof(ar.VariantId), "Wybrany wariant nie istnieje.");
+                ModelState.AddModelError(nameof(vm.VariantId), "Wybrany wariant nie istnieje.");
 
             // Walidacja zależna od trybu
-            if (ar.AddressKind == AddressKind.Address)
+            if (vm.AddressKind == AddressKind.Address)
             {
-                if (string.IsNullOrWhiteSpace(ar.City))
-                    ModelState.AddModelError(nameof(ar.City), "Miasto jest wymagane.");
+                if (string.IsNullOrWhiteSpace(vm.City))
+                    ModelState.AddModelError(nameof(vm.City), "Miasto jest wymagane.");
             }
             else // Plot
             {
-                if (string.IsNullOrWhiteSpace(ar.PlotNumber))
-                    ModelState.AddModelError(nameof(ar.PlotNumber), "Numer działki jest wymagany.");
+                if (string.IsNullOrWhiteSpace(vm.PlotNumber))
+                    ModelState.AddModelError(nameof(vm.PlotNumber), "Numer działki jest wymagany.");
             }
-
-            // Składamy Address (bo masz [Required] w encji)
-            ar.Address = BuildDisplayAddress(ar);
-
-            // Usuwamy walidację pól systemowych, których nie ma w formularzu
-            ModelState.Remove(nameof(AnalysisRequest.ApplicationUserId));
-            ModelState.Remove(nameof(AnalysisRequest.ApplicationUser));
-            ModelState.Remove(nameof(AnalysisRequest.Variant));
 
             if (!ModelState.IsValid)
             {
-                ar.Variant = variant!;
-                return View(ar);
+                // żeby Create.cshtml mógł pokazać nazwę wariantu po błędach
+                ViewBag.VariantName = variant?.Name;
+                return View(vm);
             }
 
-            ar.Status = AnalysisStatus.New;
-            ar.CreatedAt = DateTime.UtcNow;
+            // Mapowanie VM -> encja (encja jest zapisywana do DB)
+            var ar = new AnalysisRequest
+            {
+                VariantId = vm.VariantId,
+                AddressKind = vm.AddressKind,
+
+                Country = vm.Country,
+                City = vm.City,
+                PostalCode = vm.PostalCode,
+                Street = vm.Street,
+                StreetNumber = vm.StreetNumber,
+
+                PlotNumber = vm.PlotNumber,
+                CadastralArea = vm.CadastralArea,
+                Commune = vm.Commune,
+
+                PlotWidthM = vm.PlotWidthM,
+                PlotLengthM = vm.PlotLengthM,
+                ModuleWidthM = vm.ModuleWidthM,
+                ModuleLengthM = vm.ModuleLengthM,
+
+                ApplicationUserId = userId,
+
+                Status = AnalysisStatus.New,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Składamy Address (bo masz [Required] w encji)
+            ar.Address = BuildDisplayAddress(ar);
 
             _calc.ComputeAndApply(ar, new AnalysisAssumptions
             {
@@ -157,7 +174,6 @@ namespace BuildMaX.Web.Controllers
 
             return RedirectToAction(nameof(Details), new { id = ar.AnalysisRequestId });
         }
-
 
         // EDIT GET: Admin/Analyst
         [Authorize(Roles = "Admin,Analyst")]
@@ -312,11 +328,16 @@ namespace BuildMaX.Web.Controllers
                 .OrderByDescending(x => x.Count)
                 .ToListAsync();
 
+            // Bezpiecznie: nie polegamy na a.Variant.Name (nawigacja może być null / brak Include).
+            // Łączymy po VariantId i grupujemy po nazwie wariantu z tabeli Variants.
             var byVariant = await _db.AnalysisRequests
                 .AsNoTracking()
                 .Where(a => a.CreatedAt >= from)
-                .Include(a => a.Variant)
-                .GroupBy(a => a.Variant.Name)
+                .Join(_db.Variants.AsNoTracking(),
+                    a => a.VariantId,
+                    v => v.VariantId,
+                    (a, v) => v.Name)
+                .GroupBy(name => name)
                 .Select(g => new DashboardRow
                 {
                     Label = g.Key,
@@ -335,7 +356,6 @@ namespace BuildMaX.Web.Controllers
             return View(vm);
         }
 
-        
         // ---- helpers ----
 
         private bool CanAccess(AnalysisRequest ar)
@@ -349,7 +369,6 @@ namespace BuildMaX.Web.Controllers
 
         private static string BuildDisplayAddress(AnalysisRequest ar)
         {
-            // Działka
             if (ar.AddressKind == AddressKind.Plot)
             {
                 var s = $"Działka {ar.PlotNumber}";
@@ -360,7 +379,6 @@ namespace BuildMaX.Web.Controllers
                 return s;
             }
 
-            // Adres
             var parts = new List<string>();
 
             var streetPart = (ar.Street ?? "").Trim();
@@ -377,7 +395,6 @@ namespace BuildMaX.Web.Controllers
             if (!string.IsNullOrWhiteSpace(countryPart))
                 parts.Add(countryPart);
 
-            // fallback — żeby Required na Address nie wywalał zapisu
             if (parts.Count == 0)
                 return "—";
 
@@ -408,20 +425,21 @@ namespace BuildMaX.Web.Controllers
 
             if (ar is null) return NotFound();
             if (!CanAccess(ar)) return Forbid();
+            if (ar.Variant is null) return NotFound();
 
             var isAdminOrAnalyst = User.IsInRole("Admin") || User.IsInRole("Analyst");
 
-            // jeśli Variant nie załadował się (nie powinno, ale lepiej bezpiecznie)
-            if (!isAdminOrAnalyst && (ar.Variant is null || !ar.Variant.IncludesPdf))
-                return Forbid();
-            // Dolicz wyniki jeśli potrzeba
-            var computation = _calc.ComputeAndApply(ar);
+            if (!isAdminOrAnalyst)
+            {
+                if (!ar.Variant.IncludesPdf)
+                    return Forbid();
+            }
 
-            var bytes = _pdf.GenerateAnalysisRequestReport(ar, ar.Variant!, computation);
+            var computation = _calc.ComputeAndApply(ar);
+            var bytes = _pdf.GenerateAnalysisRequestReport(ar, ar.Variant, computation);
             var fileName = $"raport-analizy-{ar.AnalysisRequestId}.pdf";
 
             return File(bytes, "application/pdf", fileName);
         }
-
     }
 }

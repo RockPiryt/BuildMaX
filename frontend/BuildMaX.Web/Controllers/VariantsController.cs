@@ -136,17 +136,21 @@ namespace BuildMaX.Web.Controllers
         // Własne LINQ: ranking wariantów wg ilości analiz opłacalnych (>= 40%)
         public async Task<IActionResult> TopProfitable()
         {
-            var data = await _db.AnalysisRequests
-                .AsNoTracking()
-                .Where(a => a.BuiltUpPercent >= 40)
-                .GroupBy(a => a.Variant.Name)
-                .Select(g => new TopProfitableVariantVm
-                {
-                    Variant = g.Key,
-                    Count = g.Count()
-                })
-                .OrderByDescending(x => x.Count)
-                .ToListAsync();
+            // Bezpiecznie: nie opieramy się o a.Variant.Name (nawigacja może być null / brak Include),
+            // tylko robimy JOIN po VariantId.
+            var data =
+                await (from a in _db.AnalysisRequests.AsNoTracking()
+                       where a.BuiltUpPercent >= 40
+                       join v in _db.Variants.AsNoTracking()
+                            on a.VariantId equals v.VariantId
+                       group a by v.Name into g
+                       select new TopProfitableVariantVm
+                       {
+                           Variant = g.Key,
+                           Count = g.Count()
+                       })
+                      .OrderByDescending(x => x.Count)
+                      .ToListAsync();
 
             return View(data);
         }

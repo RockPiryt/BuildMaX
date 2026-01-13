@@ -1,4 +1,4 @@
-@model BuildMaX.Web.Models.Domain.AnalysisRequest
+@model BuildMaX.Web.Models.ViewModels.Analysis.CreateAnalysisRequestViewModel
 @using BuildMaX.Web.Models.Domain.Enums
 
 @{
@@ -10,14 +10,7 @@
 <div class="card p-3">
     <div class="mb-3">
         <strong>Wybrany wariant:</strong>
-        @if (Model.Variant != null)
-        {
-            <span>@Model.Variant.Name</span>
-        }
-        else
-        {
-            <span>Wariant #@Model.VariantId</span>
-        }
+        <span>@(ViewBag.VariantName ?? $"Wariant #{Model.VariantId}")</span>
     </div>
 
     <form asp-action="Create" method="post" id="createForm">
@@ -27,29 +20,24 @@
         <!-- Wariant jest przekazany z Pricing i nieedytowalny -->
         <input type="hidden" asp-for="VariantId" />
 
-        <!-- To pole jest REQUIRED w encji, ale użytkownik nie wpisuje go ręcznie -->
-        <input type="hidden" asp-for="Address" id="AddressCombined" />
-
         <h3 class="mt-2">Identyfikacja lokalizacji</h3>
 
         <div class="mb-3">
             <div class="form-check form-check-inline">
                 <input class="form-check-input"
                        type="radio"
-                       name="AddressKind"
+                       asp-for="AddressKind"
                        id="modeAddress"
-                       value="@((int)AddressKind.Address)"
-                       @(Model.AddressKind == AddressKind.Plot ? "" : "checked") />
+                       value="@AddressKind.Address" />
                 <label class="form-check-label" for="modeAddress">Adres</label>
             </div>
 
             <div class="form-check form-check-inline">
                 <input class="form-check-input"
                        type="radio"
-                       name="AddressKind"
+                       asp-for="AddressKind"
                        id="modePlot"
-                       value="@((int)AddressKind.Plot)"
-                       @(Model.AddressKind == AddressKind.Plot ? "checked" : "") />
+                       value="@AddressKind.Plot" />
                 <label class="form-check-label" for="modePlot">Działka</label>
             </div>
 
@@ -163,19 +151,6 @@
             const addressBlock = document.getElementById('addressBlock');
             const plotBlock = document.getElementById('plotBlock');
 
-            const country = document.getElementById('Country');
-            const city = document.getElementById('City');
-            const postal = document.getElementById('PostalCode');
-            const street = document.getElementById('Street');
-            const streetNo = document.getElementById('StreetNumber');
-
-            const plotNo = document.getElementById('PlotNumber');
-            const cadastral = document.getElementById('CadastralArea');
-            const commune = document.getElementById('Commune');
-
-            const addressCombined = document.getElementById('AddressCombined');
-            const form = document.getElementById('createForm');
-
             function isPlotMode() {
                 return modePlot && modePlot.checked;
             }
@@ -188,55 +163,10 @@
                     plotBlock.classList.add('d-none');
                     addressBlock.classList.remove('d-none');
                 }
-                buildCombinedAddress();
             }
 
-            function safe(v) { return (v || '').trim(); }
-
-            function buildCombinedAddress() {
-                if (isPlotMode()) {
-                    let parts = [];
-                    const pn = safe(plotNo?.value);
-                    if (pn) parts.push(`Działka ${pn}`);
-                    const ca = safe(cadastral?.value);
-                    if (ca) parts.push(`obręb ${ca}`);
-                    const co = safe(commune?.value);
-                    if (co) parts.push(`gmina ${co}`);
-                    const c = safe(city?.value);
-                    if (c) parts.push(c);
-                    const k = safe(country?.value);
-                    if (k) parts.push(k);
-
-                    addressCombined.value = parts.length ? parts.join(', ') : '';
-                } else {
-                    let parts = [];
-                    const st = safe(street?.value);
-                    const sn = safe(streetNo?.value);
-                    if (st) parts.push(sn ? `${st} ${sn}` : st);
-
-                    const pc = safe(postal?.value);
-                    const ci = safe(city?.value);
-                    if (ci) parts.push(pc ? `${pc} ${ci}` : ci);
-
-                    const k = safe(country?.value);
-                    if (k) parts.push(k);
-
-                    addressCombined.value = parts.length ? parts.join(', ') : '';
-                }
-            }
-
-            // events
             modeAddress?.addEventListener('change', toggleBlocks);
             modePlot?.addEventListener('change', toggleBlocks);
-
-            [country, city, postal, street, streetNo, plotNo, cadastral, commune].forEach(el => {
-                el?.addEventListener('input', buildCombinedAddress);
-            });
-
-            // przed wysłaniem upewnij się, że Address nie jest puste ([Required])
-            form?.addEventListener('submit', function () {
-                buildCombinedAddress();
-            });
 
             // initial
             toggleBlocks();
