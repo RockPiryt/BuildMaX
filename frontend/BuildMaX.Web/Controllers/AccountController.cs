@@ -24,6 +24,7 @@ namespace BuildMaX.Web.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+
         // dane z formularza RegisterViewModel
         [HttpPost]
         [AllowAnonymous]
@@ -32,7 +33,8 @@ namespace BuildMaX.Web.Controllers
         {
             ViewBag.ReturnUrl = returnUrl;
 
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid)
+                return View(vm);
 
             var user = new ApplicationUser
             {
@@ -47,6 +49,9 @@ namespace BuildMaX.Web.Controllers
             {
                 // domyślnie rola Client, To powoduje: Wstawienie wpisu do tabeli AspNetUserRoles, Połączenie UserId ↔ RoleId roli Client
                 await _users.AddToRoleAsync(user, "Client");
+
+                // Dla pewności wyczyść ewentualny stan poprzedniej sesji
+                await _signIn.SignOutAsync();
                 await _signIn.SignInAsync(user, isPersistent: false);
 
                 if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -61,13 +66,25 @@ namespace BuildMaX.Web.Controllers
             return View(vm);
         }
 
-
         // Wyświetla formularz logowania (Login.cshtml). returnUrl przechowuje adres, na który użytkownik zostanie przekierowany po zalogowaniu.
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string? returnUrl = null)
+        public async Task<IActionResult> Login(string? returnUrl = null)
         {
             ViewBag.ReturnUrl = returnUrl;
+
+            // jeśli już zalogowany, nie pokazuj loginu – odeślij na returnUrl albo Home
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            // opcjonalnie: wyczyść zewnętrzne ciasteczka (np. po social login) – bezpieczne w standardowych konfiguracjach
+            await _signIn.SignOutAsync();
+
             return View();
         }
 
@@ -78,12 +95,15 @@ namespace BuildMaX.Web.Controllers
         {
             ViewBag.ReturnUrl = returnUrl;
 
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid)
+                return View(vm);
 
-            // PasswordSignInAsync	Waliduje login i hasło, vm.Email- Login użytkownika, vm.Password-Hasło w formie jawnej które następnie hashuje aby porównać z hashem z db, RememberMe	Cookie trwałe, lockoutOnFailure	Brak blokady konta
-            // _signIn.PasswordSignInAsyncsprawdza hash z DB
+            // PasswordSignInAsync: waliduje login i hasło, porównuje z hashem w DB
             var result = await _signIn.PasswordSignInAsync(
-                vm.Email, vm.Password, vm.RememberMe, lockoutOnFailure: false);
+                vm.Email,
+                vm.Password,
+                vm.RememberMe,
+                lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
@@ -97,17 +117,19 @@ namespace BuildMaX.Web.Controllers
             return View(vm);
         }
 
-
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signIn.SignOutAsync();
+
+            // Wymuś powrót na stronę publiczną
             return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult AccessDenied() => View();
     }
 }
